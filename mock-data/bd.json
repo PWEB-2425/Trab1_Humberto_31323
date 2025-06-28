@@ -1,0 +1,61 @@
+{
+  "alunos": [
+    {
+      "Nome": "Humberto",
+      "id": 1,
+      "Apelido": "Landim",
+      "Curso": "Engenharia de Redes e SIstemas de Computadores",
+      "Ano_Curricular": "2ºAno"
+    },
+    {
+      "Nome": "Paulo ",
+      "id": 2,
+      "Apelido": "Monteiro",
+      "Curso": "Engenharia de Computação Gráfica e Multimédia",
+      "Ano_Curricular": "2ºAno"
+    },
+    {
+      "Nome": "Tiago",
+      "id": 3,
+      "Apelido": "Sousa",
+      "Curso": "Designe de Ambiente",
+      "Ano_Curricular": "3ºAno"
+    },
+    {
+      "Nome": "Matilde",
+      "id": 4,
+      "Apelido": "Barbosa",
+      "Curso": "Termalismo e Bem-Estar",
+      "Ano_Curricular": "2ºAno"
+    },
+    {
+      "Nome": "Rita",
+      "id": 5,
+      "Apelido": "Fernandes",
+      "Curso": "Termalismo e Bem-Estar",
+      "Ano_Curricular": "2ºAno"
+    }
+  ],
+  "cursos": [
+    {
+      "Nome": "Engenharia de Redes e SIstemas de Computadores",
+      "Sigla": "ERSC",
+      "id": 1
+    },
+    {
+      "Nome": "Engenharia de Computação Gráfica e Multimédia",
+      "Sigla": "ECGM",
+      "id": 2
+    },
+    {
+      "Nome": "Designe de Ambiente",
+      "Sigla": "DA",
+      "id": 3
+    },
+    {
+      "Nome": "Termalismo",
+      "Sigla": "TBE",
+      "id": 4
+    }
+  ]
+}
