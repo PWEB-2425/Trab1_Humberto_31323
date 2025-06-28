@@ -67,11 +67,12 @@
 
   <script>
     // Verifica se o usuário está autenticado ao carregar a página
+    // index.html
     window.addEventListener('DOMContentLoaded', () => {
-      const user = localStorage.getItem('user');  // Verifica se o 'user' existe no localStorage
+      const user = localStorage.getItem('user');  // Verifica se o 'user' está presente no localStorage
       if (!user) {
         alert('Você precisa fazer login primeiro!');
-        window.location.href = 'login.html';  // Redireciona para a página de login caso o usuário não esteja autenticado
+        window.location.href = 'login.html';  // Redireciona para o login.html caso o usuário não esteja autenticado
       }
     });
 
