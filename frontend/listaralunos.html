@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Listar Alunos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h1>Lista de Alunos</h1>
+    <table class="table table-bordered" id="tabelaAlunos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Apelido</th>
+          <th>Curso</th>
+          <th>Ano Curricular</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- A tabela será preenchida via JavaScript -->
+      </tbody>
+    </table>
+    <a href="dashboard.html" class="btn btn-primary">Voltar</a>
+  </div>
+
+  <script>
+    // Função para exibir os alunos na tabela
+    async function listarAlunos() {
+      const resposta = await fetch("http://localhost:3000/alunos");
+      const alunos = await resposta.json();
+
+      const tabela = document.getElementById("tabelaAlunos").getElementsByTagName("tbody")[0];
+
+      alunos.forEach(aluno => {
+        const novaLinha = tabela.insertRow();
+        
+        const celulaId = novaLinha.insertCell(0);
+        const celulaNome = novaLinha.insertCell(1);
+        const celulaApelido = novaLinha.insertCell(2);
+        const celulaCurso = novaLinha.insertCell(3);
+        const celulaAno = novaLinha.insertCell(4);
+
+        celulaId.textContent = aluno.id;
+        celulaNome.textContent = aluno.Nome;
+        celulaApelido.textContent = aluno.Apelido;
+        celulaCurso.textContent = aluno.Curso;
+        celulaAno.textContent = aluno.Ano_Curricular;
+      });
+    }
+
+    // Carregar a lista de alunos quando a página for carregada
+    window.onload = listarAlunos;
+  </script>
+</body>
+</html>
