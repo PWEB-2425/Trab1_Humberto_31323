@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Trabalho1_PW</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <style>
+    .menu-lateral {
+      width: 200px;
+      background-color: #f0f0f0;
+      padding: 10px;
+      transition: all 0.3s ease;
+      float: left;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .btn-menu {
+      cursor: pointer;
+      font-size: 24px;
+      margin: 10px;
+    }
+
+    .item-menu {
+      list-style: none;
+      margin: 10px 0;
+    }
+
+    .item-menu a {
+      text-decoration: none;
+      color: black;
+      display: flex;
+      align-items: center;
+    }
+
+    .item-menu .icon {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botão para mostrar/ocultar o menu -->
+  <div class="btn-menu" id="menu-toggle">
+    <i class="bi bi-list"></i>
+  </div>
+
+  <!-- Menu lateral -->
+  <nav class="menu-lateral" id="menu-lateral">
+    <ul>
+      <li class="item-menu">
+        <a href="index.html">
+          <span class="icon"><i class="bi bi-house"></i></span>
+          <span class="txt-link">Menu Inicial</span>
+        </a>
+      </li>
+      <li class="item-menu">
+        <a href="dashboard.html">
+          <span class="icon"><i class="bi bi-columns-gap"></i></span>
+          <span class="txt-link">Dashboard</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <script>
+    const menuBtn = document.getElementById("menu-toggle");
+    const menu = document.getElementById("menu-lateral");
+
+    menuBtn.addEventListener("click", () => {
+      menu.classList.toggle("hidden");
+    });
+  </script>
+</body>
+</html>

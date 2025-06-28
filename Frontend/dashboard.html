@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Trabalho1_PW</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <style>
+    .menu-lateral {
+      width: 200px;
+      background-color: #f0f0f0;
+      padding: 10px;
+      transition: all 0.3s ease;
+      float: left;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .btn-menu {
+      cursor: pointer;
+      font-size: 24px;
+      margin: 10px;
+    }
+    .item-menu {
+      list-style: none;
+      margin: 10px 0;
+    }
+    .item-menu a {
+      text-decoration: none;
+      color: black;
+      display: flex;
+      align-items: center;
+    }
+    .item-menu .icon {
+      margin-right: 8px;
+    }
+    main {
+      margin-left: 220px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botão de menu -->
+<div class="btn-menu" id="menu-toggle">
+  <i class="bi bi-list"></i>
+</div>
+
+<!-- Menu lateral (começa escondido com class "hidden") -->
+<nav class="menu-lateral hidden" id="menu-lateral">
+  <ul>
+    <li class="item-menu">
+      <a href="menuinicial.html">
+        <span class="icon"><i class="bi bi-house"></i></span>
+        <span class="txt-link">Menu Inicial</span>
+      </a>
+    </li>
+    <li class="item-menu">
+      <a href="dashboard.html">
+        <span class="icon"><i class="bi bi-columns-gap"></i></span>
+        <span class="txt-link">Dashboard</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+  <main>
+    <h1>Dashboard</h1>
+
+    <h2>Lista de Alunos</h2>
+    <button id="btnAlunos">Mostrar Lista de Alunos</button>
+    <div id="listanomes"></div>
+
+    <h2>Lista de Cursos</h2>
+    <button id="btnCursos">Mostrar Lista de Cursos</button>
+    <div id="listacursos"></div>
+
+    <h2>Pesquisar Alunos</h2>
+    <button id="btnPesquisa">Pesquisar Alunos</button>
+    <div id="pesquisaAluno" style="display:none; margin-top: 10px">
+      <input type="number" id="inputAlunoId" placeholder="Insira o ID do Aluno">
+      <button id="btnPesquisar">Pesquisar</button>
+    </div>
+
+    <div id="resultadoPesquisa"></div>
+  </main>
+
+  <!-- IMPORTANTE -->
+  <script src="script.js"></script>
+</body>
+</html>

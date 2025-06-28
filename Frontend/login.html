@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
+
+    form {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="loginForm">
+    <h3>Login</h3>
+    <input type="text" placeholder="Login" id="login" required> <!--placeholder serve para mostrar o que deve ser inserido-->
+    <!-- O id serve para identificar o elemento no JavaScript -->
+     <!-- O required serve para indicar que o campo é obrigatório -->
+    <input type="password" placeholder="Password" id="password" required>
+    <input type="submit" value="Entrar">
+  </form>
+
+  <script src="login.js"></script>
+
+</body>
+</html>
