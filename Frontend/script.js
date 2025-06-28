@@ -7,19 +7,18 @@ const pesquisaAlunoDiv = document.getElementById("pesquisaAluno");
 const inputAlunoId = document.getElementById("inputAlunoId");
 const btnPesquisar = document.getElementById("btnPesquisar");
 const resultadoPesquisa = document.getElementById("resultadoPesquisa");
-const menuBtn = document.getElementById("menu-toggle");
-const menu = document.querySelector(".menu-lateral");
 
 const BASE_URL = "http://localhost:3000";
 
-// Mostrar lista de alunos
+// Função para mostrar lista de alunos
 async function mostrarAlunos() {
+  console.log("Função mostrarAlunos chamada!"); // Log para depuração
   try {
     const resposta = await fetch(`${BASE_URL}/alunos`);
     const alunos = await resposta.json();
 
     if (listaNomes) {
-      listaNomes.innerHTML = "";
+      listaNomes.innerHTML = ""; // Limpar a lista existente
       alunos.forEach(aluno => {
         const novoP = document.createElement("p");
         novoP.innerHTML = `${aluno.Nome} ${aluno.Apelido} - ${aluno.Curso} (${aluno.Ano_Curricular})`;
@@ -31,14 +30,15 @@ async function mostrarAlunos() {
   }
 }
 
-// Mostrar lista de cursos
+// Função para mostrar lista de cursos
 async function mostrarCursos() {
+  console.log("Função mostrarCursos chamada!"); // Log para depuração
   try {
     const resposta = await fetch(`${BASE_URL}/cursos`);
     const cursos = await resposta.json();
 
     if (listaCursos) {
-      listaCursos.innerHTML = "";
+      listaCursos.innerHTML = ""; // Limpar a lista existente
       cursos.forEach(curso => {
         const novoP = document.createElement("p");
         novoP.innerHTML = `${curso.Nome} - ${curso.Sigla} (ID: ${curso.id})`;
@@ -50,52 +50,58 @@ async function mostrarCursos() {
   }
 }
 
-// Alternar visibilidade do menu lateral
-if (menuBtn && menu) {
-  menuBtn.addEventListener('click', () => {
-    menu.classList.toggle('hidden');
-  });
-}
+// Função para pesquisar aluno por ID
+async function pesquisarAluno() {
+  console.log("Função pesquisarAluno chamada!"); // Log para depuração
+  const id = parseInt(inputAlunoId.value, 10);
+  if (isNaN(id) || id <= 0) {
+    resultadoPesquisa.innerHTML = "<p style='color: red;'>Por favor, insira um ID válido.</p>";
+    return;
+  }
 
-// Mostrar/ocultar barra de pesquisa
-if (botaoPesquisa && pesquisaAlunoDiv && inputAlunoId && resultadoPesquisa) {
-  botaoPesquisa.addEventListener("click", () => {
-    pesquisaAlunoDiv.style.display = pesquisaAlunoDiv.style.display === "none" ? "block" : "none";
-    resultadoPesquisa.innerHTML = "";
-    inputAlunoId.value = "";
-  });
-}
-
-// Buscar aluno por ID
-if (btnPesquisar && inputAlunoId && resultadoPesquisa) {
-  btnPesquisar.addEventListener("click", async () => {
-    const id = Number(inputAlunoId.value);
-    if (!id) {
-      resultadoPesquisa.innerHTML = "<p style='color: red;'>Por favor, insira um ID válido.</p>";
-      return;
-    }
-
-    try {
-      const resposta = await fetch(`${BASE_URL}/alunos`);
-      const alunos = await resposta.json();
-      const aluno = alunos.find(a => a.id === id);
-
-      if (aluno) {
+  try {
+    const resposta = await fetch(`${BASE_URL}/alunos/${id}`);
+    if (resposta.ok) {
+      const aluno = await resposta.json();
+      if (aluno && aluno.id === id) {
         resultadoPesquisa.innerHTML = `<p>Aluno encontrado: ${aluno.Nome} ${aluno.Apelido} - ${aluno.Curso} (${aluno.Ano_Curricular})</p>`;
       } else {
         resultadoPesquisa.innerHTML = "<p style='color:red'>Aluno não encontrado.</p>";
       }
-    } catch (error) {
-      console.error('Erro ao buscar aluno:', error);
-      resultadoPesquisa.innerHTML = "<p style='color:red'>Erro ao buscar aluno.</p>";
+    } else {
+      resultadoPesquisa.innerHTML = "<p style='color:red'>Aluno não encontrado.</p>";
     }
+  } catch (error) {
+    console.error('Erro ao buscar aluno:', error);
+    resultadoPesquisa.innerHTML = "<p style='color:red'>Erro ao buscar aluno.</p>";
+  }
+}
+
+// Adicionando eventos aos botões
+if (botaoNomes) {
+  console.log("Evento para Listar Alunos adicionado!");
+  botaoNomes.addEventListener("click", mostrarAlunos);
+}
+
+if (botaoCursos) {
+  console.log("Evento para Listar Cursos adicionado!");
+  botaoCursos.addEventListener("click", mostrarCursos);
+}
+
+if (botaoPesquisa) {
+  console.log("Evento para Mostrar/Ocultar Pesquisa adicionado!");
+  botaoPesquisa.addEventListener("click", () => {
+    pesquisaAlunoDiv.style.display = pesquisaAlunoDiv.style.display === 'none' ? 'block' : 'none';
   });
 }
 
-// Associar botões às funções
-if (botaoNomes) {
-  botaoNomes.addEventListener("click", mostrarAlunos);
+if (btnPesquisar) {
+  console.log("Evento para Pesquisar Aluno adicionado!");
+  btnPesquisar.addEventListener("click", pesquisarAluno);
 }
-if (botaoCursos) {
-  botaoCursos.addEventListener("click", mostrarCursos);
-}
+
+// Carregar listas ao iniciar a página
+window.addEventListener('load', () => {
+  mostrarAlunos();
+  mostrarCursos();
+});

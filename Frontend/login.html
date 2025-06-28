@@ -2,9 +2,11 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>Login - Trabalho1_PW</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
@@ -46,14 +48,41 @@
 
   <form id="loginForm">
     <h3>Login</h3>
-    <input type="text" placeholder="Login" id="login" required> <!--placeholder serve para mostrar o que deve ser inserido-->
-    <!-- O id serve para identificar o elemento no JavaScript -->
-     <!-- O required serve para indicar que o campo é obrigatório -->
-    <input type="password" placeholder="Password" id="password" required>
+    <input type="text" id="login" placeholder="Login" required>
+    <input type="password" id="password" placeholder="Password" required>
     <input type="submit" value="Entrar">
   </form>
 
-  <script src="login.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm');
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const login = document.getElementById('login').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert('Login realizado com sucesso!');
+            window.location.href = '/home';  // Redireciona para a página inicial
+          } else {
+            alert('Login ou senha incorretos!');
+          }
+        })
+        .catch(error => {
+          alert('Erro na autenticação!');
+          console.error('Erro ao autenticar:', error);
+        });
+      });
+    });
+  </script>
 
 </body>
 </html>

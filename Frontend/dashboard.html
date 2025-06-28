@@ -5,64 +5,87 @@
   <title>Dashboard - Trabalho1_PW</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Menu lateral */
     .menu-lateral {
       width: 200px;
       background-color: #f0f0f0;
       padding: 10px;
-      transition: all 0.3s ease;
-      float: left;
+      position: fixed;
+      top: 0;
+      left: -200px; /* Menu começa oculto */
+      height: 100%;
+      transition: left 0.3s ease;
+      z-index: 999;
     }
-    .hidden {
-      display: none !important;
+
+    .menu-lateral.open {
+      left: 0; /* Quando aberto, a barra lateral se move para dentro */
     }
+
     .btn-menu {
       cursor: pointer;
       font-size: 24px;
       margin: 10px;
+      position: fixed;
+      z-index: 1000;
     }
-    .item-menu {
+
+    .menu-lateral ul {
       list-style: none;
+      padding: 0;
+    }
+
+    .item-menu {
       margin: 10px 0;
     }
+
     .item-menu a {
       text-decoration: none;
       color: black;
       display: flex;
       align-items: center;
     }
+
     .item-menu .icon {
       margin-right: 8px;
     }
+
     main {
       margin-left: 220px;
       padding: 20px;
+      flex: 1;
+    }
+
+    h1, h2 {
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <!-- Botão de menu -->
-<div class="btn-menu" id="menu-toggle">
-  <i class="bi bi-list"></i>
-</div>
+  <div class="btn-menu" id="menu-toggle">
+    <i class="bi bi-list"></i>
+  </div>
 
-<!-- Menu lateral (começa escondido com class "hidden") -->
-<nav class="menu-lateral hidden" id="menu-lateral">
-  <ul>
-    <li class="item-menu">
-      <a href="menuinicial.html">
-        <span class="icon"><i class="bi bi-house"></i></span>
-        <span class="txt-link">Menu Inicial</span>
-      </a>
-    </li>
-    <li class="item-menu">
-      <a href="dashboard.html">
-        <span class="icon"><i class="bi bi-columns-gap"></i></span>
-        <span class="txt-link">Dashboard</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+  <!-- Menu lateral -->
+  <nav class="menu-lateral" id="menu-lateral" aria-label="Menu de navegação">
+    <ul id="menu-items">
+      <li class="item-menu">
+        <a href="menuinicial.html" aria-label="Ir para o menu inicial">
+          <span class="icon"><i class="bi bi-house"></i></span>
+          <span class="txt-link">Menu Inicial</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
   <main>
     <h1>Dashboard</h1>
@@ -77,7 +100,7 @@
 
     <h2>Pesquisar Alunos</h2>
     <button id="btnPesquisa">Pesquisar Alunos</button>
-    <div id="pesquisaAluno" style="display:none; margin-top: 10px">
+    <div id="pesquisaAluno" style="display:none;">
       <input type="number" id="inputAlunoId" placeholder="Insira o ID do Aluno">
       <button id="btnPesquisar">Pesquisar</button>
     </div>
@@ -85,7 +108,30 @@
     <div id="resultadoPesquisa"></div>
   </main>
 
-  <!-- IMPORTANTE -->
-  <script src="script.js"></script>
+  <script>
+    // Menu de navegação
+    const menuBtn = document.getElementById("menu-toggle");
+    const menu = document.getElementById("menu-lateral");
+    const menuItems = document.getElementById("menu-items");
+
+    // Alterna a classe 'open' para abrir/fechar o menu lateral
+    menuBtn.addEventListener("click", () => {
+      menu.classList.toggle("open");
+    });
+
+    // Atualiza o menu dependendo da página
+    if (window.location.pathname.includes('dashboard.html')) {
+      document.getElementById("menu-items").innerHTML = `
+        <li class="item-menu">
+          <a href="menuinicial.html" aria-label="Ir para o menu inicial">
+            <span class="icon"><i class="bi bi-house"></i></span>
+            <span class="txt-link">Menu Inicial</span>
+          </a>
+        </li>`;
+    }
+  </script>
+
+  
+
 </body>
 </html>

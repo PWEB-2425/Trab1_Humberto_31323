@@ -1,30 +1,40 @@
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
-
 const app = express();
 const PORT = 3000;
 
-// Configurar header CSP para permitir scripts normais (sem eval)
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "script-src 'self' 'unsafe-eval'");
+let isAuthenticated = false; // Controle simples de autenticação
+
+// Middleware para verificar se o usuário está autenticado
+function checkAuth(req, res, next) {
+  if (!isAuthenticated) {
+    return res.redirect('/');
+  }
   next();
-});
+}
 
-// Servir arquivos estáticos da pasta frontend
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.json());
 
-// Rota para servir o login.html primeiro
+// Serve arquivos estáticos da pasta frontend (ajustando o caminho)
+app.use(express.static(path.join(__dirname, '../frontend'))); // Acessa 'frontend' a partir de 'backend'
+
+// Rota para servir o login.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/login.html')); // Serve login.html na rota raiz
+  res.sendFile(path.join(__dirname, '../frontend', 'login.html')); // Serve login.html
 });
 
-// Rota para servir o index.html (página principal após login)
-app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html')); // Serve index.html após login
+// Rota para o menu inicial (deve ser protegido, ou seja, só após login)
+app.get('/home', checkAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend', 'menuinicial.html')); // Serve menuinicial.html após login
 });
 
-const bdPath = path.join(__dirname, '../mock-data/bd.json');
+// Rota para o dashboard (também deve ser protegido)
+app.get('/dashboard', checkAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend', 'dashboard.html')); // Serve dashboard.html após login
+});
+
+const bdPath = path.join(__dirname, '../mock-data', 'bd.json');
 
 // API para pegar os dados dos alunos
 app.get('/alunos', async (req, res) => {
@@ -53,4 +63,16 @@ app.get('/cursos', async (req, res) => {
 // Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+// Rota para autenticar o login
+app.post('/login', (req, res) => {
+  const { login, password } = req.body;
+
+  if (login === 'admin' && password === 'admin') {
+    isAuthenticated = true; // Marca como autenticado
+    res.json({ message: "Login bem-sucedido" });
+  } else {
+    res.status(401).json({ error: "Login ou senha incorretos" });
+  }
 });
