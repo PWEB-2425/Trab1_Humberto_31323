@@ -66,6 +66,16 @@
   </nav>
 
   <script>
+    // Verifica se o usuário está autenticado ao carregar a página
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = localStorage.getItem('user');  // Verifica se o 'user' existe no localStorage
+      if (!user) {
+        alert('Você precisa fazer login primeiro!');
+        window.location.href = 'login.html';  // Redireciona para a página de login caso o usuário não esteja autenticado
+      }
+    });
+
+    // Menu de navegação
     const menuBtn = document.getElementById("menu-toggle");
     const menu = document.getElementById("menu-lateral");
 
@@ -73,5 +83,6 @@
       menu.classList.toggle("hidden");
     });
   </script>
+
 </body>
 </html>

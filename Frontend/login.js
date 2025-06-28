@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (login === 'admin' && password === 'admin') {
       alert('Login realizado com sucesso!');
-      localStorage.setItem('user', login);
-      window.location.href = 'index.html';
+      localStorage.setItem('user', login);  // Armazena o login no localStorage
+      window.location.href = '/home';  // Redireciona para a rota '/home' no servidor
     } else {
       alert('Login ou senha incorretos!');
     }

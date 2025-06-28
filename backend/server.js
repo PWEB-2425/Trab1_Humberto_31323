@@ -11,12 +11,22 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Servir arquivos estáticos da pasta frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+// Rota para servir o login.html primeiro
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/login.html')); // Serve login.html na rota raiz
+});
+
+// Rota para servir o index.html (página principal após login)
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html')); // Serve index.html após login
+});
+
 const bdPath = path.join(__dirname, '../mock-data/bd.json');
 
+// API para pegar os dados dos alunos
 app.get('/alunos', async (req, res) => {
   try {
     const data = await fs.readFile(bdPath, 'utf8');
@@ -28,6 +38,7 @@ app.get('/alunos', async (req, res) => {
   }
 });
 
+// API para pegar os dados dos cursos
 app.get('/cursos', async (req, res) => {
   try {
     const data = await fs.readFile(bdPath, 'utf8');
@@ -39,6 +50,7 @@ app.get('/cursos', async (req, res) => {
   }
 });
 
+// Iniciar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
