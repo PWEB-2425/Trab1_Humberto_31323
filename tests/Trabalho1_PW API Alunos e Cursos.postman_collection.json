@@ -1,0 +1,77 @@
+{
+	"info": {
+		"_postman_id": "4cdac50a-0c52-4116-a5bd-7c777a1d170d",
+		"name": "Trabalho1_PW API Alunos e Cursos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44310987",
+		"_collection_link": "https://humbertolandim-1066957.postman.co/workspace/1ba90c94-42b8-41c3-89b4-70633717d98a/collection/44310987-4cdac50a-0c52-4116-a5bd-7c777a1d170d?action=share&source=collection_link&creator=44310987"
+	},
+	"item": [
+		{
+			"name": "Obter alunos",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/alunos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"alunos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtercursos",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/cursos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"cursos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Alunos",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/alunos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"alunos"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
