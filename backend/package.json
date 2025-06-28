@@ -1,0 +1,16 @@
+{
+    "name": "banckend",
+    "version": "1.0.0",
+    "description": "Backend for the Trabalho1_PW project",
+    "main": "index.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "mongoose": "^5.10.9"
+    },
+    "author": "",
+    "license": "ISC",
+    "keywords": []
+}
