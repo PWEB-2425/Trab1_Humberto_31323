@@ -37,47 +37,14 @@
             font-weight: bold;
         }
 
-        /* Estilo da tabela: AGORA BRANCA COM TEXTO ESCURO */
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: white; /* Fundo da tabela branco */
-        }
-        th, td {
-            border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
-            color: #212529; /* Cor do texto das células (quase preto) */
-        }
-        th {
-            background-color: #e9ecef; /* Fundo do cabeçalho da tabela (cinza muito claro) */
-            color: #ff0088; /* Texto rosa para o cabeçalho */
-            font-weight: bold;
-            border-bottom: 2px solid #ff0088;
-        }
-
-        /* Estilo para linhas zebradas (opcional, para melhor leitura) */
-        tbody tr:nth-child(even) {
-            background-color: #f2f2f2; /* Fundo para linhas pares (cinza muito claro) */
-        }
-        tbody tr:nth-child(odd) {
-            background-color: white; /* Fundo para linhas ímpares (branco) */
-        }
-
-
         /* Estilo para formulários e seus inputs */
         .form-container {
             margin-top: 30px;
             padding: 25px;
-            border: 1px solid #ff0088; /* Borda rosa para o formulário */
+            border: 1px solid #ff0088;
             border-radius: 10px;
-            background-color: #222222; /* Fundo escuro para o formulário */
+            background-color: #222222;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            /* display: none; Não queremos que o formulário de login esteja escondido por padrão */
         }
 
         .form-label {
@@ -111,40 +78,7 @@
             margin-right: 10px;
         }
 
-        .btn-success {
-            background-color: #ff0088;
-            border-color: #ff0088;
-            color: #ffffff;
-        }
-        .btn-success:hover {
-            background-color: #e6007a;
-            border-color: #e6007a;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background-color: #cc0055;
-            border-color: #cc0055;
-            color: #ffffff;
-        }
-        .btn-danger:hover {
-            background-color: #b3004b;
-            border-color: #b3004b;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: #555555;
-            border-color: #555555;
-            color: #ffffff;
-        }
-        .btn-secondary:hover {
-            background-color: #444444;
-            border-color: #444444;
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
+        .btn-primary { /* Mapeado para o estilo rosa para o botão de login */
             background-color: #ff0088;
             border-color: #ff0088;
             color: #ffffff;
@@ -153,7 +87,7 @@
             background-color: #e6007a;
             border-color: #e6007a;
         }
-
+        
         /* Ajustes de responsividade */
         @media (max-width: 768px) {
             .container {
@@ -170,7 +104,7 @@
 <body>
     <div class="container">
         <h1 class="mt-4">Login</h1>
-        <form id="loginForm" class="form-container" style="display: block;"> <!-- Exibido por padrão -->
+        <form id="loginForm" class="form-container" style="display: block;">
             <div class="mb-3">
                 <label for="loginUsername" class="form-label">Usuário:</label>
                 <input type="text" class="form-control" id="loginUsername" required>
@@ -186,7 +120,7 @@
         <p id="loginMessage" class="text-center mt-3" style="color: red;"></p>
     </div>
 
-    <!-- Script para lidar com o login (você precisará criar este arquivo) -->
+    <!-- Script para lidar com a lógica do login -->
     <script src="login.js"></script>
 </body>
 </html>

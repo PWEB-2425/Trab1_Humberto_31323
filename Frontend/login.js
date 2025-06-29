@@ -1,33 +1,51 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('loginForm');
-  
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
+// frontend/login.js
 
-    const login = document.getElementById('login').value;
-    const password = document.getElementById('password').value;
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("loginForm");
+    const loginUsernameInput = document.getElementById("loginUsername");
+    const loginPasswordInput = document.getElementById("loginPassword");
+    const loginMessage = document.getElementById("loginMessage");
 
-    // Envia os dados para o servidor para verificar o login
-    fetch('/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ login, password }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.message) {
-        alert('Login realizado com sucesso!');
-        localStorage.setItem('user', login);  // Armazena o login no localStorage
-        window.location.href = '/home';  // Redireciona para a página inicial (home)
-      } else {
-        alert('Login ou senha incorretos!');
-      }
-    })
-    .catch(error => {
-      alert('Erro na autenticação!');
-      console.error('Erro ao autenticar:', error);
-    });
-  });
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            const username = loginUsernameInput.value;
+            const password = loginPasswordInput.value;
+
+            loginMessage.textContent = ""; // Limpa mensagens anteriores
+
+            try {
+                const response = await fetch("http://localhost:3000/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ login: username, password: password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    loginMessage.style.color = "green";
+                    loginMessage.textContent = "Login bem-sucedido! Redirecionando...";
+                    console.log("Login bem-sucedido:", data.message);
+                    // Redireciona para o dashboard após um pequeno atraso para o utilizador ver a mensagem
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html"; // OU "index.html" se esse for o seu menu inicial principal após login
+                    }, 1000); // 1 segundo de atraso
+                } else {
+                    loginMessage.style.color = "red";
+                    loginMessage.textContent = data.error || "Erro de login.";
+                    console.error("Erro de login:", data.error || response.statusText);
+                }
+            } catch (error) {
+                loginMessage.style.color = "red";
+                loginMessage.textContent = "Erro ao conectar ao servidor. Tente novamente.";
+                console.error("Erro na requisição de login:", error);
+            }
+        });
+    } else {
+        console.error("Elemento 'loginForm' não encontrado.");
+    }
 });

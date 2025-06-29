@@ -44,12 +44,24 @@ app.use((req, res, next) => {
 const frontendPath = path.join(__dirname, '..', 'frontend');
 console.log(`[SERVER START] Caminho configurado para express.static: ${frontendPath}`);
 
+// ====================================================================
+// ** IMPORTANTE: NOVA ORDEM PARA GARANTIR QUE O LOGIN APARECE PRIMEIRO **
+// A rota específica para a raiz ('/') deve vir ANTES de express.static
+// ====================================================================
+
+// Rota principal, serve a página de login.
+// Esta rota tem prioridade sobre o express.static para a raiz.
+app.get('/', (req, res) => {
+    console.log("Rota para login acessada (prioritária)");
+    res.sendFile(path.join(frontendPath, 'login.html'));
+});
+
 // **IMPORTANTE: Configura o Express para servir arquivos estáticos.**
-// ESTA LINHA DEVE SER COLOCADA AQUI, ANTES DE QUALQUER OUTRA ROTA `app.get()` OU `app.post()`
-// QUE NÃO SEJA UM MIDDLEWARE GLOBAL (como `app.use(express.json())`).
-// Se um ficheiro (ex: /listarcursos.js) é encontrado pelo `express.static`, ele é servido
-// e a requisição NÃO AVANÇA para as rotas definidas abaixo.
+// Esta linha deve vir DEPOIS das rotas específicas que você quer que tenham prioridade.
 app.use(express.static(frontendPath));
+
+// ====================================================================
+
 
 // --- Debugging Adicional para ficheiros JS específicos ---
 // Este middleware verifica e loga requisições que terminam em '.js' *APÓS* express.static.
@@ -79,13 +91,8 @@ app.use((req, res, next) => {
 // (como a verificação de autenticação) antes de entregá-los.
 // Elas só serão acionadas se `express.static` não tiver encontrado um ficheiro correspondente.
 
-// Rota principal, serve a página de login.
-app.get('/', (req, res) => {
-    console.log("Rota para login acessada");
-    res.sendFile(path.join(frontendPath, 'login.html'));
-});
-
 // Rotas abaixo requerem autenticação (`checkAuth` middleware)
+// NOTE: a rota '/' já está definida acima para o login.
 app.get('/home', checkAuth, (req, res) => {
     console.log("Rota para menuinicial acessada");
     res.sendFile(path.join(frontendPath, 'menuinicial.html'));
