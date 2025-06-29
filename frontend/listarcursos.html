@@ -3,126 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Cursos</title>
+    <title>Lista de Cursos</title> <!-- Título da página: "Lista de Cursos". -->
+    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones, se necessário. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Inclui a biblioteca Bootstrap CSS para estilos pré-definidos e responsividade. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
     <style>
-        /* Estilos globais */
+        /* Estilos globais - idênticos aos outros ficheiros para consistência */
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            font-family: 'Inter', sans-serif; /* Define a fonte principal. */
+            margin: 0; /* Remove margens padrão. */
+            padding: 20px; /* Adiciona preenchimento em torno do conteúdo. */
+            background-color: #1a1a1a; /* Fundo muito escuro/preto. */
+            color: #f0f0f0; /* Cor do texto principal (branco acinzentado). */
+            min-height: 100vh; /* Garante que o corpo ocupe a altura total da viewport. */
+            display: flex; /* Usa Flexbox para centralizar o contêiner principal. */
+            justify-content: center; /* Centraliza horizontalmente. */
+            align-items: flex-start; /* Alinha o conteúdo ao topo verticalmente. */
         }
 
         .container {
-            background-color: #2b2b2b;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 900px;
-            box-sizing: border-box;
+            background-color: #2b2b2b; /* Fundo mais claro para o contêiner principal. */
+            padding: 30px; /* Preenchimento interno do contêiner. */
+            border-radius: 12px; /* Cantos arredondados. */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra para profundidade. */
+            width: 100%; /* Largura total dentro do padding do body. */
+            max-width: 900px; /* Largura máxima para o conteúdo. */
+            box-sizing: border-box; /* Inclui padding e border na largura/altura. */
         }
 
         h1, h4 {
-            color: #ff0088;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: bold;
+            color: #ff0088; /* Cor rosa vibrante para títulos. */
+            margin-bottom: 25px; /* Espaço abaixo dos títulos. */
+            text-align: center; /* Centraliza o texto dos títulos. */
+            font-weight: bold; /* Texto em negrito. */
         }
 
         /* Estilo da tabela: BRANCA COM TEXTO ESCURO */
         table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: white;
+            width: 100%; /* A tabela ocupa a largura total do seu contêiner. */
+            border-collapse: separate; /* Permite cantos arredondados nas bordas da tabela. */
+            border-spacing: 0; /* Remove espaçamento entre as células. */
+            margin-top: 20px; /* Margem superior para a tabela. */
+            border-radius: 8px; /* Cantos arredondados para a tabela. */
+            overflow: hidden; /* Garante que os cantos arredondados sejam visíveis. */
+            background-color: white; /* Fundo branco para a tabela. */
         }
         th, td {
-            border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
-            color: #212529;
+            border: 1px solid #dee2e6; /* Borda cinza clara para células e cabeçalhos. */
+            padding: 12px; /* Preenchimento interno das células. */
+            text-align: left; /* Alinha o texto à esquerda. */
+            color: #212529; /* Cor do texto dentro das células (quase preto). */
         }
         th {
-            background-color: #e9ecef;
-            color: #ff0088;
-            font-weight: bold;
-            border-bottom: 2px solid #ff0088;
+            background-color: #e9ecef; /* Fundo cinza claro para os cabeçalhos da tabela. */
+            color: #ff0088; /* Cor rosa vibrante para o texto dos cabeçalhos. */
+            font-weight: bold; /* Texto em negrito. */
+            border-bottom: 2px solid #ff0088; /* Borda inferior rosa vibrante. */
         }
 
-        /* Estilo para linhas zebradas */
-        tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
+        /* Estilo para linhas zebradas (alterna cores de fundo das linhas) */
+        tbody tr:nth-child(even) { /* Seleciona linhas pares. */
+            background-color: #f2f2f2; /* Fundo cinza muito claro. */
         }
-        tbody tr:nth-child(odd) {
-            background-color: white;
+        tbody tr:nth-child(odd) { /* Seleciona linhas ímpares. */
+            background-color: white; /* Fundo branco. */
         }
 
         /* Estilo para formulários e inputs */
         .form-container {
-            margin-top: 30px;
-            padding: 25px;
-            border: 1px solid #ff0088;
-            border-radius: 10px;
-            background-color: #222222;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            display: none;
+            margin-top: 30px; /* Margem superior. */
+            padding: 25px; /* Preenchimento interno. */
+            border: 1px solid #ff0088; /* Borda rosa vibrante. */
+            border-radius: 10px; /* Cantos arredondados. */
+            background-color: #222222; /* Fundo escuro. */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Sombra. */
+            display: none; /* Inicialmente o formulário está escondido. */
         }
 
         .form-label {
-            color: #f0f0f0;
-            font-weight: bold;
-            margin-bottom: 8px;
+            color: #f0f0f0; /* Cor do texto para labels. */
+            font-weight: bold; /* Texto em negrito. */
+            margin-bottom: 8px; /* Espaço abaixo da label. */
         }
 
         .form-control {
-            background-color: #333333;
-            border: 1px solid #555555;
-            color: #ffffff;
-            border-radius: 6px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
+            background-color: #333333; /* Fundo escuro para campos de input. */
+            border: 1px solid #555555; /* Borda cinza escura. */
+            color: #ffffff; /* Cor do texto nos inputs. */
+            border-radius: 6px; /* Cantos arredondados. */
+            padding: 10px; /* Preenchimento interno. */
+            width: 100%; /* Ocupa a largura total do pai. */
+            box-sizing: border-box; /* Inclui padding na largura. */
         }
         .form-control:focus {
-            border-color: #ff0088;
-            box-shadow: 0 0 0 0.25rem rgba(255, 0, 136, 0.25);
-            background-color: #3a3a3a;
-            color: #ffffff;
+            border-color: #ff0088; /* Borda rosa no foco. */
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 136, 0.25); /* Sombra de foco rosa. */
+            background-color: #3a3a3a; /* Fundo ligeiramente mais claro no foco. */
+            color: #ffffff; /* Mantém a cor do texto branca. */
         }
 
         /* Estilo dos botões */
         .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-            margin-right: 10px;
+            padding: 10px 20px; /* Preenchimento interno. */
+            border-radius: 8px; /* Cantos arredondados. */
+            font-weight: bold; /* Texto em negrito. */
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease; /* Transições suaves. */
+            margin-right: 10px; /* Margem à direita para espaçamento entre botões. */
         }
 
         .btn-success {
-            background-color: #ff0088;
-            border-color: #ff0088;
-            color: #ffffff;
+            background-color: #ff0088; /* Fundo rosa vibrante. */
+            border-color: #ff0088; /* Borda rosa. */
+            color: #ffffff; /* Texto branco. */
         }
         .btn-success:hover {
-            background-color: #e6007a;
-            border-color: #e6007a;
-            transform: translateY(-2px);
+            background-color: #e6007a; /* Rosa mais escuro no hover. */
+            border-color: #e6007a; /* Borda rosa mais escura. */
+            transform: translateY(-2px); /* Efeito de "levantar" no hover. */
         }
 
         .btn-danger {
-            background-color: #cc0055;
+            background-color: #cc0055; /* Fundo vermelho-rosa escuro. */
             border-color: #cc0055;
             color: #ffffff;
         }
@@ -167,50 +169,55 @@
     </style>
 </head>
 <body>
+    <!-- Contêiner principal que envolve todo o conteúdo da página. -->
     <div class="container">
-        <h1 class="mt-4">Lista de Cursos</h1>
+        <h1 class="mt-4">Lista de Cursos</h1> <!-- Título principal da página. -->
 
+        <!-- Div para agrupar botões de ação (Adicionar, Deletar, Voltar). -->
         <div class="d-flex flex-wrap justify-content-center mb-3">
-            <button id="btnAdicionarCurso" class="btn btn-success">Adicionar Novo Curso</button>
-            <button id="btnDeletarCurso" class="btn btn-danger">Deletar Curso</button>
-            <a href="dashboard.html" class="btn btn-secondary">Voltar ao Dashboard</a>
+            <button id="btnAdicionarCurso" class="btn btn-success">Adicionar Novo Curso</button> <!-- Botão para mostrar o formulário de adição. -->
+            <button id="btnDeletarCurso" class="btn btn-danger">Deletar Curso</button>             <!-- Botão para deletar um curso. -->
+            <a href="dashboard.html" class="btn btn-secondary">Voltar ao Dashboard</a>             <!-- Link/botão para voltar ao Dashboard. -->
         </div>
 
+        <!-- Formulário para adicionar um novo curso, inicialmente escondido. -->
         <div id="formAdicionarCurso" class="form-container">
-            <h4>Formulário de Curso</h4>
+            <h4>Formulário de Curso</h4> <!-- Título do formulário. -->
             <div class="mb-3">
-                <label for="inputIdCurso" class="form-label">ID:</label>
+                <label for="inputIdCurso" class="form-label">ID:</label> <!-- Label e input para o ID do curso. -->
                 <input type="number" class="form-control" id="inputIdCurso">
             </div>
             <div class="mb-3">
-                <label for="inputNomeCurso" class="form-label">Nome:</label>
+                <label for="inputNomeCurso" class="form-label">Nome:</label> <!-- Label e input para o Nome do curso. -->
                 <input type="text" class="form-control" id="inputNomeCurso">
             </div>
             <div class="mb-3">
-                <label for="inputSiglaCurso" class="form-label">Sigla:</label>
+                <label for="inputSiglaCurso" class="form-label">Sigla:</label> <!-- Label e input para a Sigla do curso. -->
                 <input type="text" class="form-control" id="inputSiglaCurso">
             </div>
+            <!-- Div para os botões de ação do formulário (Salvar, Cancelar). -->
             <div class="d-flex justify-content-end mt-4">
-                <button id="btnAdicionarCursoForm" class="btn btn-primary me-2">Salvar Curso</button>
-                <button id="btnCancelarCurso" class="btn btn-secondary">Cancelar</button>
+                <button id="btnAdicionarCursoForm" class="btn btn-primary me-2">Salvar Curso</button> <!-- Botão para salvar o novo curso. -->
+                <button id="btnCancelarCurso" class="btn btn-secondary">Cancelar</button>             <!-- Botão para cancelar e fechar o formulário. -->
             </div>
         </div>
 
+        <!-- Tabela para exibir a lista de cursos. -->
         <table class="table table-striped" id="tabelaCursos">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Sigla</th>
+                    <th>ID</th>     <!-- Cabeçalho da coluna ID. -->
+                    <th>Nome</th>   <!-- Cabeçalho da coluna Nome. -->
+                    <th>Sigla</th>  <!-- Cabeçalho da coluna Sigla. -->
                 </tr>
             </thead>
             <tbody>
-                <!-- Os dados dos cursos serão inseridos aqui pelo JavaScript -->
+                <!-- Os dados dos cursos serão inseridos aqui dinamicamente pelo JavaScript. -->
             </tbody>
         </table>
     </div>
 
-    <!-- ESTA LINHA É CRÍTICA: Certifique-se de que está EXATAMENTE ASSIM -->
-    <script src="listarcursos.js"></script> 
+    <!-- Script JavaScript para a lógica de interatividade da página de cursos. -->
+    <script src="listarcursos.js"></script>
 </body>
 </html>

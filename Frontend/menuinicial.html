@@ -3,128 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Inicial</title>
+    <title>Menu Inicial</title> <!-- Título da página. -->
+    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones (ex: dashboard, pessoas). -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Inclui a biblioteca Bootstrap CSS para estilos pré-definidos e responsividade. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
     <style>
         /* Estilos globais */
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0; /* Remover padding do body para que a sidebar possa ir até a borda */
-            background-color: #1a1a1a; /* Fundo muito escuro/preto */
-            color: #f0f0f0; /* Cor do texto principal (branco acinzentado) */
-            min-height: 100vh;
-            display: flex; /* Usar flexbox para layout de barra lateral */
-            flex-direction: row; /* Itens em linha (sidebar e conteúdo) */
+            font-family: 'Inter', sans-serif; /* Define a fonte principal para 'Inter'. */
+            margin: 0; /* Remove margens padrão do corpo. */
+            padding: 0; /* Remover padding do body para que a sidebar possa ir até a borda. */
+            background-color: #1a1a1a; /* Fundo muito escuro/preto para o corpo da página. */
+            color: #f0f0f0; /* Cor do texto principal (branco acinzentado). */
+            min-height: 100vh; /* Garante que o corpo ocupe a altura total da viewport. */
+            display: flex; /* Usar flexbox para layout de barra lateral e conteúdo principal. */
+            flex-direction: row; /* Itens (sidebar e conteúdo) dispostos em linha. */
         }
 
         /* Estilo da barra lateral (Sidebar) */
         .sidebar {
-            width: 250px; /* Largura da barra lateral */
-            background-color: #0d0d0d; /* Fundo mais escuro para a sidebar */
-            padding: 20px;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5); /* Sombra para destacar */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border-right: 1px solid #333; /* Uma linha sutil à direita */
-            border-top-right-radius: 12px; /* Cantos arredondados para a sidebar */
-            border-bottom-right-radius: 12px;
-            /* Para dispositivos menores, a sidebar pode se tornar responsiva */
-            transition: width 0.3s ease; /* Transição suave para redimensionamento */
-            flex-shrink: 0; /* Impede que a sidebar encolha */
+            width: 250px; /* Largura fixa da barra lateral. */
+            background-color: #0d0d0d; /* Fundo mais escuro para a sidebar. */
+            padding: 20px; /* Preenchimento interno. */
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5); /* Sombra para destacar a sidebar. */
+            display: flex; /* Usa Flexbox para organizar o conteúdo interno da sidebar. */
+            flex-direction: column; /* Itens internos da sidebar dispostos em coluna. */
+            align-items: center; /* Centraliza horizontalmente o conteúdo da sidebar. */
+            border-right: 1px solid #333; /* Uma linha sutil à direita para separação. */
+            border-top-right-radius: 12px; /* Cantos arredondados na parte superior direita. */
+            border-bottom-right-radius: 12px; /* Cantos arredondados na parte inferior direita. */
+            transition: width 0.3s ease; /* Transição suave para redimensionamento da sidebar (em responsividade). */
+            flex-shrink: 0; /* Impede que a sidebar encolha quando o conteúdo principal precisa de mais espaço. */
         }
 
         .sidebar-header {
-            color: #ff0088;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            font-weight: bold;
-            text-align: center;
+            color: #ff0088; /* Cor rosa vibrante para o cabeçalho da sidebar. */
+            font-size: 1.5rem; /* Tamanho da fonte. */
+            margin-bottom: 30px; /* Espaço abaixo do cabeçalho. */
+            font-weight: bold; /* Texto em negrito. */
+            text-align: center; /* Centraliza o texto. */
         }
 
         .sidebar-nav {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
+            width: 100%; /* A navegação ocupa a largura total da sidebar. */
+            display: flex; /* Usa Flexbox para os links de navegação. */
+            flex-direction: column; /* Links dispostos em coluna. */
         }
 
         .sidebar-nav .nav-link {
-            color: #f0f0f0; /* Cor do texto dos links */
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px; /* Cantos arredondados para links */
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            font-weight: bold;
+            color: #f0f0f0; /* Cor do texto dos links. */
+            padding: 12px 15px; /* Preenchimento interno dos links. */
+            margin-bottom: 10px; /* Espaçamento entre os links. */
+            border-radius: 8px; /* Cantos arredondados para os links. */
+            text-decoration: none; /* Remove o sublinhado dos links. */
+            display: flex; /* Usa Flexbox para alinhar ícone e texto. */
+            align-items: center; /* Alinha verticalmente ícone e texto. */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Transições suaves no hover. */
+            font-weight: bold; /* Texto em negrito. */
         }
 
         .sidebar-nav .nav-link i {
-            margin-right: 15px;
-            font-size: 1.2rem;
-            color: #ff0088; /* Ícones em rosa */
+            margin-right: 15px; /* Espaçamento entre o ícone e o texto. */
+            font-size: 1.2rem; /* Tamanho do ícone. */
+            color: #ff0088; /* Cor rosa vibrante para os ícones. */
         }
 
+        /* Estilo ao passar o mouse ou quando o link está ativo. */
         .sidebar-nav .nav-link:hover,
         .sidebar-nav .nav-link.active {
-            background-color: #ff0088; /* Fundo rosa no hover/ativo */
-            color: #ffffff; /* Texto branco no hover/ativo */
+            background-color: #ff0088; /* Fundo rosa vibrante no hover/ativo. */
+            color: #ffffff; /* Texto branco no hover/ativo. */
         }
         .sidebar-nav .nav-link:hover i,
         .sidebar-nav .nav-link.active i {
-            color: #ffffff; /* Ícone branco no hover/ativo */
+            color: #ffffff; /* Ícone branco no hover/ativo. */
         }
 
         /* Estilo para o conteúdo principal */
         .main-content {
-            flex-grow: 1; /* Ocupa o espaço restante */
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-grow: 1; /* Faz com que o conteúdo principal ocupe todo o espaço restante disponível. */
+            padding: 20px; /* Preenchimento interno do conteúdo principal. */
+            display: flex; /* Usa Flexbox para centralizar o contêiner interno. */
+            justify-content: center; /* Centraliza horizontalmente. */
+            align-items: flex-start; /* Alinha o conteúdo ao topo verticalmente. */
         }
 
+        /* Estilo do contêiner principal dentro do main-content */
         .container {
-            background-color: #2b2b2b; /* Fundo mais claro para o conteúdo principal */
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 900px; /* Largura máxima para o conteúdo */
-            box-sizing: border-box;
+            background-color: #2b2b2b; /* Fundo mais claro para o conteúdo principal. */
+            padding: 30px; /* Preenchimento interno. */
+            border-radius: 12px; /* Cantos arredondados. */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra para profundidade. */
+            width: 100%; /* Ocupa a largura total do seu contêiner pai. */
+            max-width: 900px; /* Largura máxima para o conteúdo. */
+            box-sizing: border-box; /* Inclui padding e border na largura/altura. */
         }
 
         h1, h4 {
-            color: #ff0088; /* Cor rosa vibrante para títulos */
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: bold;
+            color: #ff0088; /* Cor rosa vibrante para títulos. */
+            margin-bottom: 25px; /* Espaço abaixo dos títulos. */
+            text-align: center; /* Centraliza o texto dos títulos. */
+            font-weight: bold; /* Texto em negrito. */
         }
 
         /* Estilo dos botões */
         .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-            margin-right: 10px;
+            padding: 10px 20px; /* Preenchimento interno. */
+            border-radius: 8px; /* Cantos arredondados. */
+            font-weight: bold; /* Texto em negrito. */
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease; /* Transições suaves. */
+            margin-right: 10px; /* Margem à direita para espaçamento entre botões (em layouts de linha). */
         }
 
         .btn-primary {
-            background-color: #ff0088;
-            border-color: #ff0088;
-            color: #ffffff;
+            background-color: #ff0088; /* Fundo rosa vibrante. */
+            border-color: #ff0088; /* Borda rosa. */
+            color: #ffffff; /* Texto branco. */
         }
         .btn-primary:hover {
-            background-color: #e6007a;
-            border-color: #e6007a;
-            transform: translateY(-2px);
+            background-color: #e6007a; /* Rosa mais escuro no hover. */
+            border-color: #e6007a; /* Borda rosa mais escura. */
+            transform: translateY(-2px); /* Efeito de "levantar" no hover. */
         }
         .btn-danger {
-            background-color: #cc0055;
+            background-color: #cc0055; /* Fundo vermelho-rosa escuro. */
             border-color: #cc0055;
             color: #ffffff;
         }
@@ -137,78 +140,82 @@
         /* Ajustes de responsividade para telas menores */
         @media (max-width: 768px) {
             body {
-                flex-direction: column;
+                flex-direction: column; /* Em telas menores, a sidebar e o conteúdo se empilham. */
             }
             .sidebar {
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-around;
-                padding: 15px 10px;
-                border-bottom: 1px solid #333;
-                border-radius: 0;
-                border-bottom-left-radius: 12px;
-                border-bottom-right-radius: 12px;
+                width: 100%; /* A sidebar ocupa a largura total. */
+                flex-direction: row; /* Os itens da sidebar ficam em linha. */
+                justify-content: space-around; /* Distribui os itens uniformemente. */
+                padding: 15px 10px; /* Ajusta o preenchimento. */
+                border-bottom: 1px solid #333; /* Adiciona uma borda inferior. */
+                border-radius: 0; /* Remove arredondamento geral. */
+                border-bottom-left-radius: 12px; /* Adiciona arredondamento inferior esquerdo. */
+                border-bottom-right-radius: 12px; /* Adiciona arredondamento inferior direito. */
             }
             .sidebar-header {
-                display: none;
+                display: none; /* Oculta o cabeçalho da sidebar em telas menores. */
             }
             .sidebar-nav {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
+                flex-direction: row; /* Links de navegação em linha. */
+                flex-wrap: wrap; /* Permite quebrar para a próxima linha se necessário. */
+                justify-content: center; /* Centraliza os links. */
             }
             .sidebar-nav .nav-link {
-                padding: 8px 10px;
-                margin: 5px;
+                padding: 8px 10px; /* Reduz o preenchimento dos links. */
+                margin: 5px; /* Reduz a margem entre os links. */
             }
             .sidebar-nav .nav-link i {
-                margin-right: 5px;
+                margin-right: 5px; /* Reduz a margem do ícone. */
             }
             .main-content {
-                padding: 15px;
-                margin-top: 15px;
+                padding: 15px; /* Reduz o preenchimento do conteúdo principal. */
+                margin-top: 15px; /* Adiciona margem superior para separar da sidebar. */
             }
             .container {
-                padding: 15px;
+                padding: 15px; /* Reduz o preenchimento do contêiner interno. */
             }
             .btn {
-                width: 100%;
-                margin-bottom: 10px;
-                margin-right: 0;
+                width: 100%; /* Botões do conteúdo principal ocupam a largura total. */
+                margin-bottom: 10px; /* Adiciona margem inferior. */
+                margin-right: 0; /* Remove margem direita. */
             }
         }
     </style>
 </head>
 <body>
+    <!-- Sidebar (barra lateral de navegação) -->
     <div class="sidebar">
         <div class="sidebar-header">
-            Meu App
+            Meu App <!-- Título do seu aplicativo na sidebar. -->
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-link active">
+            <!-- Links de navegação. A classe 'active' pode ser adicionada via JS para a página atual. -->
+            <a href="dashboard.html" class="nav-link active"> <!-- Link para o Dashboard. Inicialmente ativo. -->
                 <i class="bi bi-speedometer"></i> Dashboard
             </a>
-            <a href="listaralunos.html" class="nav-link">
+            <a href="listaralunos.html" class="nav-link"> <!-- Link para a lista de Alunos. -->
                 <i class="bi bi-people"></i> Alunos
             </a>
-            <a href="listarcursos.html" class="nav-link">
+            <a href="listarcursos.html" class="nav-link"> <!-- Link para a lista de Cursos. -->
                 <i class="bi bi-book"></i> Cursos
             </a>
-            <a href="/" class="nav-link">
+            <a href="/" class="nav-link"> <!-- Link para Sair (logout). Redireciona para a página de login. -->
                 <i class="bi bi-box-arrow-right"></i> Sair
             </a>
         </nav>
     </div>
 
+    <!-- Conteúdo principal da página -->
     <div class="main-content">
         <div class="container">
-            <h1 class="mt-4">Menu Inicial</h1>
-            <p class="text-center">Escolha uma opção:</p>
+            <h1 class="mt-4">Menu Inicial</h1> <!-- Título principal do conteúdo. -->
+            <p class="text-center">Escolha uma opção:</p> <!-- Mensagem de instrução. -->
+            <!-- Botões principais de navegação para outras seções do aplicativo. -->
             <div class="d-flex flex-column align-items-center mt-5">
                 <a href="dashboard.html" class="btn btn-primary mb-3 w-75">Ir para o Dashboard</a>
                 <a href="listaralunos.html" class="btn btn-primary mb-3 w-75">Ver Alunos</a>
                 <a href="listarcursos.html" class="btn btn-primary mb-3 w-75">Ver Cursos</a>
-                <a href="/" class="btn btn-danger w-75">Sair (Logout)</a>
+                <a href="/" class="btn btn-danger w-75">Sair (Logout)</a> <!-- Botão de Logout. -->
             </div>
         </div>
     </div>
