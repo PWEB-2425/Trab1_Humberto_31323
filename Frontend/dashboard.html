@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
   <meta charset="UTF-8">
   <title>Dashboard - Trabalho1_PW</title>
+  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+  
   <style>
+    /* Estilo para o menu lateral */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -13,37 +18,37 @@
       flex-direction: column;
     }
 
-    /* Menu lateral */
     .menu-lateral {
       width: 200px;
       background-color: #f0f0f0;
       padding: 10px;
       position: fixed;
       top: 0;
-      left: -200px; /* Menu começa oculto */
+      left: -200px;
       height: 100%;
       transition: left 0.3s ease;
       z-index: 999;
     }
 
+    /* Menu lateral aberto */
     .menu-lateral.open {
-      left: 0; /* Quando aberto, a barra lateral se move para dentro */
+      left: 0;
     }
 
+    /* Botão do menu */
     .btn-menu {
       cursor: pointer;
       font-size: 24px;
       margin: 10px;
       position: fixed;
       z-index: 1000;
+      top: 10px;
+      left: 10px;
     }
 
-    .menu-lateral ul {
-      list-style: none;
-      padding: 0;
-    }
-
+    /* Itens do menu lateral */
     .item-menu {
+      list-style: none;
       margin: 10px 0;
     }
 
@@ -58,25 +63,50 @@
       margin-right: 8px;
     }
 
+    /* Estilo para o conteúdo principal */
     main {
-      margin-left: 220px;
+      margin-left: 0; /* Inicia sem margem, o JS do menu ajustará */
       padding: 20px;
       flex: 1;
+      transition: margin-left 0.3s ease;
     }
 
-    h1, h2 {
-      text-align: center;
+    body.menu-aberto main {
+      margin-left: 200px;
+    }
+
+    /* Estilo para os botões no dashboard */
+    .btn {
+      width: 100%;
+    }
+
+    /* Estilos para os campos de pesquisa (inicialmente ocultos) */
+    .pesquisa-container {
+      display: none; /* Oculto por padrão */
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+
+    .pesquisa-container.active {
+        display: block; /* Visível quando a classe 'active' é adicionada via JS */
+    }
+
+    .resultado-pesquisa {
+        margin-top: 10px;
+        font-weight: bold;
     }
   </style>
 </head>
-<body>
 
+<body>
   <div class="btn-menu" id="menu-toggle">
     <i class="bi bi-list"></i>
   </div>
 
-  <!-- Menu lateral -->
-  <nav class="menu-lateral" id="menu-lateral" aria-label="Menu de navegação">
+  <nav class="menu-lateral" id="menu-lateral">
     <ul id="menu-items">
       <li class="item-menu">
         <a href="menuinicial.html" aria-label="Ir para o menu inicial">
@@ -84,55 +114,50 @@
           <span class="txt-link">Menu Inicial</span>
         </a>
       </li>
+      <li class="item-menu">
+        <a href="dashboard.html" aria-label="Ir para o dashboard">
+          <span class="icon"><i class="bi bi-columns-gap"></i></span>
+          <span class="txt-link">Dashboard</span>
+        </a>
+      </li>
     </ul>
   </nav>
 
   <main>
-    <center><h1>Dashboard</h1></center>
+    <div class="container mt-4">
+      <h1>Dashboard</h1>
 
-    <h2>Lista de Alunos</h2>
-    <button id="btnAlunos">Mostrar Lista de Alunos</button>
-    <div id="listanomes"></div>
+      <div class="mb-4 d-flex flex-column">
+        <button id="btnListarAlunos" class="btn btn-primary mb-3">Listar Alunos</button>
+        <button id="btnListarCursos" class="btn btn-primary mb-3">Listar Cursos</button>
+        <button id="btnPesquisarAlunos" class="btn btn-primary mb-3">Pesquisar Alunos</button>
+        <button id="btnPesquisarCursos" class="btn btn-primary mb-3">Pesquisar Cursos</button> 
+      </div>
 
-    <h2>Lista de Cursos</h2>
-    <button id="btnCursos">Mostrar Lista de Cursos</button>
-    <div id="listacursos"></div>
+      <div id="pesquisaAlunoContainer" class="pesquisa-container">
+        <h4>Pesquisar Aluno por Nome</h4>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Nome ou Apelido do Aluno" id="inputPesquisaNomeAluno">
+          <button class="btn btn-outline-primary" type="button" id="btnVerificarAluno">Verificar</button>
+          <button class="btn btn-outline-secondary" type="button" id="btnCancelarPesquisaAluno">Cancelar</button>
+        </div>
+        <div id="resultadoPesquisaAluno" class="resultado-pesquisa"></div>
+      </div>
 
-    <h2>Pesquisar Alunos</h2>
-    <button id="btnPesquisa">Pesquisar Alunos</button>
-    <div id="pesquisaAluno" style="display:none;">
-      <input type="number" id="inputAlunoId" placeholder="Insira o ID do Aluno">
-      <button id="btnPesquisar">Pesquisar</button>
+      <div id="pesquisaCursoContainer" class="pesquisa-container">
+        <h4>Pesquisar Curso por Nome ou Sigla</h4>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Nome ou Sigla do Curso" id="inputPesquisaNomeCurso">
+          <button class="btn btn-outline-primary" type="button" id="btnVerificarCurso">Verificar</button>
+          <button class="btn btn-outline-secondary" type="button" id="btnCancelarPesquisaCurso">Cancelar</button>
+        </div>
+        <div id="resultadoPesquisaCurso" class="resultado-pesquisa"></div>
+      </div>
+
     </div>
-
-    <div id="resultadoPesquisa"></div>
   </main>
 
-  <!-- Incluindo o script.js para garantir que a manipulação do DOM seja feita -->
   <script src="script.js"></script>
-
-  <script>
-    // Menu de navegação
-    const menuBtn = document.getElementById("menu-toggle");
-    const menu = document.getElementById("menu-lateral");
-    const menuItems = document.getElementById("menu-items");
-
-    // Alterna a classe 'open' para abrir/fechar o menu lateral
-    menuBtn.addEventListener("click", () => {
-      menu.classList.toggle("open");
-    });
-
-    // Atualiza o menu dependendo da página
-    if (window.location.pathname.includes('dashboard.html')) {
-      document.getElementById("menu-items").innerHTML = `
-        <li class="item-menu">
-          <a href="menuinicial.html" aria-label="Ir para o menu inicial">
-            <span class="icon"><i class="bi bi-columns-gap"></i></span>
-            <span class="txt-link">Menu Inicial</span>
-          </a>
-        </li>`;
-    }
-  </script>
-
 </body>
+
 </html>

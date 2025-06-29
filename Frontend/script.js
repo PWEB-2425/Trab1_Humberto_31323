@@ -1,102 +1,191 @@
-const listaNomes = document.getElementById("listanomes");
-const listaCursos = document.getElementById("listacursos");
-const botaoCursos = document.getElementById("btnCursos");
-const botaoNomes = document.getElementById("btnAlunos");
-const botaoPesquisa = document.getElementById("btnPesquisa");
-const pesquisaAlunoDiv = document.getElementById("pesquisaAluno");
-const inputAlunoId = document.getElementById("inputAlunoId");
-const btnPesquisar = document.getElementById("btnPesquisar");
-const resultadoPesquisa = document.getElementById("resultadoPesquisa");
-
 const BASE_URL = "http://localhost:3000";
 
-// Redirecionar para a página de listar alunos
-botaoNomes.addEventListener("click", () => {
-  window.location.href = "listarAlunos.html"; // Redireciona para a página listarAlunos.html
-});
+document.addEventListener("DOMContentLoaded", () => {
+  // Lógica do Menu de navegação (global)
+  const menuBtn = document.getElementById("menu-toggle");
+  const menu = document.getElementById("menu-lateral");
+  const body = document.body;
 
-// Redirecionar para a página de listar cursos
-botaoCursos.addEventListener("click", () => {
-  window.location.href = "listarCursos.html"; // Redireciona para a página listarCursos.html
-});
-
-// Função para pesquisar aluno por ID
-async function pesquisarAluno() {
-  console.log("Função pesquisarAluno chamada!"); // Log para depuração
-
-  // Obter o ID inserido no campo de pesquisa
-  const id = parseInt(inputAlunoId.value, 10);
-  console.log(`ID inserido para pesquisa: ${id}`);  // Log para depuração
-
-  // Verificar se o ID inserido é válido
-  if (isNaN(id) || id <= 0) {
-    resultadoPesquisa.innerHTML = "<p style='color: red;'>Por favor, insira um ID válido.</p>";
-    return;
+  if (menuBtn && menu && body) {
+    menuBtn.addEventListener("click", () => {
+      menu.classList.toggle("open");
+      body.classList.toggle("menu-aberto");
+    });
   }
 
-  // Realizar a requisição para a API de alunos com o ID
-  try {
-    console.log(`Buscando aluno com ID: ${id}`); // Log para depuração
+  // --- Referências aos botões de navegação do Dashboard ---
+  const btnListarAlunos = document.getElementById("btnListarAlunos");
+  const btnListarCursos = document.getElementById("btnListarCursos");
+  // CORREÇÃO: Usar o ID correto do HTML "btnPesquisarAlunos"
+  const btnPesquisarAlunos = document.getElementById("btnPesquisarAlunos"); 
+  const btnPesquisarCursos = document.getElementById("btnPesquisarCursos");
 
-    const resposta = await fetch(`${BASE_URL}/alunos/${id}`);
-    
-    // Verificar se a resposta da API foi bem-sucedida
-    if (resposta.ok) {
-      const aluno = await resposta.json();
-      console.log(aluno); // Log do aluno retornado para depuração
+  // --- Referências aos containers e elementos de pesquisa ---
+  const pesquisaAlunoContainer = document.getElementById("pesquisaAlunoContainer");
+  const inputPesquisaNomeAluno = document.getElementById("inputPesquisaNomeAluno");
+  const btnVerificarAluno = document.getElementById("btnVerificarAluno");
+  const btnCancelarPesquisaAluno = document.getElementById("btnCancelarPesquisaAluno");
+  const resultadoPesquisaAluno = document.getElementById("resultadoPesquisaAluno");
 
-      if (aluno && aluno.id === id) {
-        // Se o aluno for encontrado, exibe as informações em formato de tabela
-        resultadoPesquisa.innerHTML = `
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Apelido</th>
-                <th>Curso</th>
-                <th>Ano Curricular</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>${aluno.id}</td>
-                <td>${aluno.Nome}</td>
-                <td>${aluno.Apelido}</td>
-                <td>${aluno.Curso}</td>
-                <td>${aluno.Ano_Curricular}</td>
-              </tr>
-            </tbody>
-          </table>
-        `;
-      } else {
-        // Se o aluno não for encontrado, exibe uma mensagem
-        resultadoPesquisa.innerHTML = "<p style='color:red'>Aluno não encontrado.</p>";
+  const pesquisaCursoContainer = document.getElementById("pesquisaCursoContainer");
+  const inputPesquisaNomeCurso = document.getElementById("inputPesquisaNomeCurso");
+  const btnVerificarCurso = document.getElementById("btnVerificarCurso");
+  const btnCancelarPesquisaCurso = document.getElementById("btnCancelarPesquisaCurso");
+  const resultadoPesquisaCurso = document.getElementById("resultadoPesquisaCurso");
+
+  // --- Funções Auxiliares para Mostrar/Ocultar Containers de Pesquisa ---
+  function hideAllPesquisaContainers() {
+    // Esconder ambos os containers e limpar os campos
+    if (pesquisaAlunoContainer) {
+      pesquisaAlunoContainer.classList.remove("active");
+      resultadoPesquisaAluno.textContent = '';
+      inputPesquisaNomeAluno.value = '';
+    }
+    if (pesquisaCursoContainer) {
+      pesquisaCursoContainer.classList.remove("active");
+      resultadoPesquisaCurso.textContent = '';
+      inputPesquisaNomeCurso.value = '';
+    }
+  }
+
+  // --- Event Listeners para os botões de navegação (Listar) ---
+  if (btnListarAlunos) {
+    btnListarAlunos.addEventListener("click", () => {
+      window.location.href = "listaralunos.html";
+    });
+  }
+
+  if (btnListarCursos) {
+    btnListarCursos.addEventListener("click", () => {
+      window.location.href = "listarcursos.html";
+    });
+  }
+
+  // --- Event Listeners para os botões de Pesquisar (Mostrar campo) ---
+  if (btnPesquisarAlunos) {
+    btnPesquisarAlunos.addEventListener("click", () => {
+      hideAllPesquisaContainers(); // Oculta outros containers de pesquisa
+      if (pesquisaAlunoContainer) {
+        pesquisaAlunoContainer.classList.add("active"); // Mostra o container de aluno
       }
-    } else {
-      // Se a resposta da API não for OK
-      resultadoPesquisa.innerHTML = "<p style='color:red'>Aluno não encontrado.</p>";
+    });
+  }
+
+  if (btnPesquisarCursos) {
+    btnPesquisarCursos.addEventListener("click", () => {
+      hideAllPesquisaContainers(); // Oculta outros containers de pesquisa
+      if (pesquisaCursoContainer) {
+        pesquisaCursoContainer.classList.add("active"); // Mostra o container de curso
+      }
+    });
+  }
+
+  // --- Event Listeners para botões de Cancelar Pesquisa ---
+  if (btnCancelarPesquisaAluno) {
+    btnCancelarPesquisaAluno.addEventListener("click", () => {
+      hideAllPesquisaContainers();
+    });
+  }
+
+  if (btnCancelarPesquisaCurso) {
+    btnCancelarPesquisaCurso.addEventListener("click", () => {
+      hideAllPesquisaContainers();
+    });
+  }
+
+  // --- Lógica de Pesquisa de Alunos no Dashboard ---
+  async function verificarAlunoPorNome() {
+    const termo = inputPesquisaNomeAluno.value.trim();
+    resultadoPesquisaAluno.textContent = ''; // Limpa resultado anterior
+
+    if (!termo) {
+      resultadoPesquisaAluno.textContent = "Por favor, digite um nome ou apelido.";
+      resultadoPesquisaAluno.style.color = "orange";
+      return;
     }
 
-    // Exibir o resultado da pesquisa
-    resultadoPesquisa.style.display = "block";  // Garantir que o resultado seja mostrado
-  } catch (error) {
-    // Capturar qualquer erro da requisição
-    console.error('Erro ao buscar aluno:', error);
-    resultadoPesquisa.innerHTML = "<p style='color:red'>Erro ao buscar aluno.</p>";
-    resultadoPesquisa.style.display = "block";  // Exibir o erro
+    try {
+      const resposta = await fetch(`${BASE_URL}/alunos`);
+      if (!resposta.ok) {
+        throw new Error(`HTTP error! status: ${resposta.status}`);
+      }
+      const alunos = await resposta.json();
+
+      const alunoEncontrado = alunos.find(aluno =>
+        aluno.Nome.toLowerCase().includes(termo.toLowerCase()) ||
+        aluno.Apelido.toLowerCase().includes(termo.toLowerCase())
+      );
+
+      if (alunoEncontrado) {
+        resultadoPesquisaAluno.textContent = `Aluno '${alunoEncontrado.Nome} ${alunoEncontrado.Apelido}' encontrado! (ID: ${alunoEncontrado.id})`;
+        resultadoPesquisaAluno.style.color = "green";
+      } else {
+        resultadoPesquisaAluno.textContent = `Aluno '${termo}' não encontrado.`;
+        resultadoPesquisaAluno.style.color = "red";
+      }
+    } catch (error) {
+      console.error("Erro ao verificar aluno:", error);
+      resultadoPesquisaAluno.textContent = "Erro ao pesquisar aluno. Verifique o console.";
+      resultadoPesquisaAluno.style.color = "red";
+    }
   }
-}
 
-// Adicionando evento ao botão de Pesquisa
-if (btnPesquisar) {
-  console.log("Evento para Pesquisar Aluno adicionado!");
-  btnPesquisar.addEventListener("click", pesquisarAluno); // Garante que a função de pesquisa seja chamada
-}
+  if (btnVerificarAluno) {
+    btnVerificarAluno.addEventListener("click", verificarAlunoPorNome);
+    if (inputPesquisaNomeAluno) {
+      inputPesquisaNomeAluno.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          verificarAlunoPorNome();
+        }
+      });
+    }
+  }
 
-// Ocultar as listas inicialmente
-window.addEventListener('load', () => {
-  listaNomes.style.display = "none";
-  listaCursos.style.display = "none";
-  resultadoPesquisa.style.display = "none";
+  // --- Lógica de Pesquisa de Cursos no Dashboard ---
+  async function verificarCursoPorNome() {
+    const termo = inputPesquisaNomeCurso.value.trim();
+    resultadoPesquisaCurso.textContent = ''; // Limpa resultado anterior
+
+    if (!termo) {
+      resultadoPesquisaCurso.textContent = "Por favor, digite um nome ou sigla do curso.";
+      resultadoPesquisaCurso.style.color = "orange";
+      return;
+    }
+
+    try {
+      const resposta = await fetch(`${BASE_URL}/cursos`);
+      if (!resposta.ok) {
+        throw new Error(`HTTP error! status: ${resposta.status}`);
+      }
+      const cursos = await resposta.json();
+
+      const cursoEncontrado = cursos.find(curso =>
+        curso.Nome.toLowerCase().includes(termo.toLowerCase()) ||
+        curso.Sigla.toLowerCase().includes(termo.toLowerCase())
+      );
+
+      if (cursoEncontrado) {
+        resultadoPesquisaCurso.textContent = `Curso '${cursoEncontrado.Nome}' (Sigla: ${cursoEncontrado.Sigla}) encontrado! (ID: ${cursoEncontrado.id})`;
+        resultadoPesquisaCurso.style.color = "green";
+      } else {
+        resultadoPesquisaCurso.textContent = `Curso '${termo}' não encontrado.`;
+        resultadoPesquisaCurso.style.color = "red";
+      }
+    } catch (error) {
+      console.error("Erro ao verificar curso:", error);
+      resultadoPesquisaCurso.textContent = "Erro ao pesquisar curso. Verifique o console.";
+      resultadoPesquisaCurso.style.color = "red";
+    }
+  }
+
+  if (btnVerificarCurso) {
+    btnVerificarCurso.addEventListener("click", verificarCursoPorNome);
+    if (inputPesquisaNomeCurso) {
+      inputPesquisaNomeCurso.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          verificarCursoPorNome();
+        }
+      });
+    }
+  }
 });

@@ -1,57 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Listar Alunos</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Alunos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            display: none; /* Escondido por padrão */
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container mt-4">
-    <h1>Lista de Alunos</h1>
-    <table class="table table-bordered" id="tabelaAlunos">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Apelido</th>
-          <th>Curso</th>
-          <th>Ano Curricular</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- A tabela será preenchida via JavaScript -->
-      </tbody>
-    </table>
-    <a href="dashboard.html" class="btn btn-primary">Voltar</a>
-  </div>
+    <div class="container">
+        <h1 class="mt-4">Lista de Alunos</h1>
 
-  <script>
-    // Função para exibir os alunos na tabela
-    async function listarAlunos() {
-      const resposta = await fetch("http://localhost:3000/alunos");
-      const alunos = await resposta.json();
+        <button id="btnAdicionarAluno" class="btn btn-success mb-3">Adicionar Novo Aluno</button>
+        <button id="btnDeletarAluno" class="btn btn-danger mb-3">Deletar Aluno</button>
+        <a href="dashboard.html" class="btn btn-secondary mb-3">Voltar ao Dashboard</a>
 
-      const tabela = document.getElementById("tabelaAlunos").getElementsByTagName("tbody")[0];
+        <div id="formAdicionarAluno" class="form-container">
+            <h4>Formulário de Aluno</h4>
+            <div class="mb-3">
+                <label for="inputId" class="form-label">ID:</label>
+                <input type="number" class="form-control" id="inputId">
+            </div>
+            <div class="mb-3">
+                <label for="inputNome" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="inputNome">
+            </div>
+            <div class="mb-3">
+                <label for="inputApelido" class="form-label">Apelido:</label>
+                <input type="text" class="form-control" id="inputApelido">
+            </div>
+            <div class="mb-3">
+                <label for="inputCurso" class="form-label">Curso:</label>
+                <input type="text" class="form-control" id="inputCurso">
+            </div>
+            <div class="mb-3">
+                <label for="inputAno" class="form-label">Ano Curricular:</label>
+                <input type="text" class="form-control" id="inputAno">
+            </div>
+            <button id="btnAdicionarAlunoForm" class="btn btn-primary">Salvar Aluno</button>
+            <button id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+        </div>
 
-      alunos.forEach(aluno => {
-        const novaLinha = tabela.insertRow();
-        
-        const celulaId = novaLinha.insertCell(0);
-        const celulaNome = novaLinha.insertCell(1);
-        const celulaApelido = novaLinha.insertCell(2);
-        const celulaCurso = novaLinha.insertCell(3);
-        const celulaAno = novaLinha.insertCell(4);
+        <table class="table table-striped" id="tabelaAlunos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Apelido</th>
+                    <th>Curso</th>
+                    <th>Ano Curricular</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
 
-        celulaId.textContent = aluno.id;
-        celulaNome.textContent = aluno.Nome;
-        celulaApelido.textContent = aluno.Apelido;
-        celulaCurso.textContent = aluno.Curso;
-        celulaAno.textContent = aluno.Ano_Curricular;
-      });
-    }
+    <script src="listaraluno.js"></script> </body>
 
-    // Carregar a lista de alunos quando a página for carregada
-    window.onload = listarAlunos;
-  </script>
-</body>
 </html>

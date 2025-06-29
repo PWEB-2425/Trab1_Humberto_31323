@@ -1,17 +1,21 @@
-<!-- menuinicial.html -->
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Menu Inicial - Trabalho1_PW</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+  <!-- Link para o Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  
   <style>
+    /* Estilo para o corpo da página */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
-      flex-direction: column;
+      flex-direction: column; /* Layout em coluna */
     }
 
     /* Menu lateral */
@@ -21,14 +25,15 @@
       padding: 10px;
       position: fixed;
       top: 0;
-      left: -200px; /* Ajuste para aproximar o menu da borda esquerda */
+      left: -200px; /* Menu começa fora da tela */
       height: 100%;
-      transition: left 0.3s ease; /* Transição suave */
+      transition: left 0.3s ease;
       z-index: 999;
     }
 
+    /* Menu lateral aberto */
     .menu-lateral.open {
-      left: 0; /* Quando aberto, o menu se move para dentro */
+      left: 0;
     }
 
     /* Botão de menu */
@@ -59,31 +64,58 @@
       margin-right: 8px;
     }
 
+    /* Conteúdo principal */
     main {
-      margin-left: 220px; /* A área principal vai começar após o menu lateral */
+      margin-left: 0; /* Inicialmente sem margem */
       padding: 20px;
       flex: 1;
+      transition: margin-left 0.3s ease;
     }
 
-    h1, h2 {
+    /* Ajuste o conteúdo quando o menu estiver aberto */
+    body.menu-aberto main {
+      margin-left: 200px;
+    }
+
+    /* Estilo para o texto do título */
+    h1 {
       text-align: center;
+    }
+
+    /* Estilo para o marquee */
+    marquee {
+      font-size: 1.5rem;
+      color: #007bff;
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Botão de menu -->
+  <!-- Botão para abrir o menu lateral -->
   <div class="btn-menu" id="menu-toggle">
-    <i class="bi bi-list"></i> <!-- Ícone do menu -->
+    <i class="bi bi-list"></i>
   </div>
 
   <!-- Menu lateral -->
-  <nav class="menu-lateral" id="menu-lateral" aria-label="Menu de navegação">
+  <nav class="menu-lateral" id="menu-lateral">
     <ul id="menu-items">
-      <!-- O conteúdo será inserido dinamicamente pelo JS -->
+      <li class="item-menu">
+        <a href="menuinicial.html" aria-label="Ir para o menu inicial">
+          <span class="icon"><i class="bi bi-house"></i></span>
+          <span class="txt-link">Menu Inicial</span>
+        </a>
+      </li>
+      <li class="item-menu">
+        <a href="dashboard.html" aria-label="Ir para o dashboard">
+          <span class="icon"><i class="bi bi-columns-gap"></i></span>
+          <span class="txt-link">Dashboard</span>
+        </a>
+      </li>
     </ul>
   </nav>
 
+  <!-- Conteúdo principal -->
   <main>
     <h1>Menu Inicial</h1>
     <marquee behavior="scroll" direction="left" scrollamount="10">
@@ -91,28 +123,8 @@
     </marquee>
   </main>
 
-  <script>
-    // Menu de navegação
-    const menuBtn = document.getElementById("menu-toggle");
-    const menu = document.getElementById("menu-lateral");
-    const menuItems = document.getElementById("menu-items");
-
-    // Alterna a classe 'open' para abrir/fechar o menu lateral
-    menuBtn.addEventListener("click", () => {
-      menu.classList.toggle("open");
-    });
-
-    // Atualiza o menu dependendo da página
-    if (window.location.pathname.includes('menuinicial.html')) {
-      document.getElementById("menu-items").innerHTML = `
-        <li class="item-menu">
-          <a href="dashboard.html" aria-label="Ir para o dashboard">
-            <span class="icon"><i class="bi bi-columns-gap"></i></span>
-            <span class="txt-link">Dashboard</span>
-          </a>
-        </li>`;
-    }
-
-  </script>
+  <!-- Script para o menu lateral -->
+  <script src="script.js"></script>
 </body>
+
 </html>

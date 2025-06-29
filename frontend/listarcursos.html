@@ -1,51 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>Listar Cursos</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Cursos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            display: none; /* Escondido por padrão */
+        }
+    </style>
 </head>
 <body>
-  <div class="container mt-4">
-    <h1>Lista de Cursos</h1>
-    <table class="table table-bordered" id="tabelaCursos">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>Sigla</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- A tabela será preenchida via JavaScript -->
-      </tbody>
-    </table>
-    <a href="dashboard.html" class="btn btn-primary">Voltar</a>
-  </div>
+    <div class="container">
+        <h1 class="mt-4">Lista de Cursos</h1>
 
-  <script>
-    // Função para exibir os cursos na tabela
-    async function listarCursos() {
-      const resposta = await fetch("http://localhost:3000/cursos");
-      const cursos = await resposta.json();
+        <button id="btnAdicionarCurso" class="btn btn-success mb-3">Adicionar Novo Curso</button>
+        <button id="btnDeletarCurso" class="btn btn-danger mb-3">Deletar Curso</button>
+        <a href="dashboard.html" class="btn btn-secondary mb-3">Voltar ao Dashboard</a>
 
-      const tabela = document.getElementById("tabelaCursos").getElementsByTagName("tbody")[0];
+        <div id="formAdicionarCurso" class="form-container">
+            <h4>Formulário de Curso</h4>
+            <div class="mb-3">
+                <label for="inputIdCurso" class="form-label">ID:</label>
+                <input type="number" class="form-control" id="inputIdCurso">
+            </div>
+            <div class="mb-3">
+                <label for="inputNomeCurso" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="inputNomeCurso">
+            </div>
+            <div class="mb-3">
+                <label for="inputSiglaCurso" class="form-label">Sigla:</label>
+                <input type="text" class="form-control" id="inputSiglaCurso">
+            </div>
+            <button id="btnAdicionarCursoForm" class="btn btn-primary">Salvar Curso</button>
+            <button id="btnCancelarCurso" class="btn btn-secondary">Cancelar</button>
+        </div>
 
-      cursos.forEach(curso => {
-        const novaLinha = tabela.insertRow();
-        
-        const celulaId = novaLinha.insertCell(0);
-        const celulaNome = novaLinha.insertCell(1);
-        const celulaSigla = novaLinha.insertCell(2);
+        <table class="table table-striped" id="tabelaCursos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Sigla</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
 
-        celulaId.textContent = curso.id;
-        celulaNome.textContent = curso.Nome;
-        celulaSigla.textContent = curso.Sigla;
-      });
-    }
-
-    // Carregar a lista de cursos quando a página for carregada
-    window.onload = listarCursos;
-  </script>
+    <script src="listarcursos.js"></script> 
 </body>
 </html>

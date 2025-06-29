@@ -1,88 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8">
-  <title>Login - Trabalho1_PW</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      justify-content: center;
-      align-items: center;
-      background-color: #f0f0f0;
-    }
+// (Seu código login.js - não precisa de alterações)
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
 
-    form {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+            const login = document.getElementById('loginInput').value;
+            const password = document.getElementById('passwordInput').value;
 
-    input[type="submit"] {
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-      border: none;
-    }
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ login, password })
+                });
 
-    input[type="submit"]:hover {
-      background-color: #45a049;
-    }
-  </style>
-</head>
-<body>
+                const data = await response.json();
 
-  <form id="loginForm">
-    <h3>Login</h3>
-    <input type="text" id="login" placeholder="Login" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <input type="submit" value="Entrar">
-  </form>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('loginForm');
-      form.addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const login = document.getElementById('login').value;
-        const password = document.getElementById('password').value;
-
-        fetch('/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ login, password })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            alert('Login realizado com sucesso!');
-            window.location.href = '/home';  // Redireciona para a página inicial
-          } else {
-            alert('Login ou senha incorretos!');
-          }
-        })
-        .catch(error => {
-          alert('Erro na autenticação!');
-          console.error('Erro ao autenticar:', error);
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.href = 'dashboard.html'; // Redireciona para o dashboard após login bem-sucedido
+                } else {
+                    alert(data.error);
+                }
+            } catch (error) {
+                console.error('Erro de rede ou servidor:', error);
+                alert('Erro ao tentar fazer login. Verifique sua conexão ou o servidor.');
+            }
         });
-      });
-    });
-  </script>
-
-</body>
-</html>
+    }
+});
