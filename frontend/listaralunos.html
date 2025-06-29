@@ -1,76 +1,210 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Alunos</title>
+    <title>Lista de Alunos</title> <!-- Título correto -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
     <style>
+        /* Estilos globais - idênticos aos outros ficheiros para consistência */
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
+
+        .container {
+            background-color: #2b2b2b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 900px;
+            box-sizing: border-box;
+        }
+
+        h1, h4 {
+            color: #ff0088;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Estilo da tabela: BRANCA COM TEXTO ESCURO */
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #dee2e6;
+            padding: 12px;
             text-align: left;
+            color: #212529;
         }
         th {
+            background-color: #e9ecef;
+            color: #ff0088;
+            font-weight: bold;
+            border-bottom: 2px solid #ff0088;
+        }
+
+        /* Estilo para linhas zebradas */
+        tbody tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+        tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+
+        /* Estilo para formulários e inputs */
         .form-container {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ccc;
+            margin-top: 30px;
+            padding: 25px;
+            border: 1px solid #ff0088;
+            border-radius: 10px;
+            background-color: #222222;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .form-label {
+            color: #f0f0f0;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            background-color: #333333;
+            border: 1px solid #555555;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: #ff0088;
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 136, 0.25);
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+
+        /* Estilo dos botões */
+        .btn {
+            padding: 10px 20px;
             border-radius: 8px;
-            background-color: #f9f9f9;
-            display: none; /* Escondido por padrão */
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            margin-right: 10px;
+        }
+
+        .btn-success {
+            background-color: #ff0088;
+            border-color: #ff0088;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            background-color: #e6007a;
+            border-color: #e6007a;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: #cc0055;
+            border-color: #cc0055;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background-color: #b3004b;
+            border-color: #b3004b;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #555555;
+            border-color: #555555;
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: #444444;
+            border-color: #444444;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: #ff0088;
+            border-color: #ff0088;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #e6007a;
+            border-color: #e6007a;
+        }
+
+        /* Ajustes de responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
         }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <h1 class="mt-4">Lista de Alunos</h1>
+        <h1 class="mt-4">Lista de Alunos</h1> <!-- Título correto para Alunos -->
 
-        <button id="btnAdicionarAluno" class="btn btn-success mb-3">Adicionar Novo Aluno</button>
-        <button id="btnDeletarAluno" class="btn btn-danger mb-3">Deletar Aluno</button>
-        <a href="dashboard.html" class="btn btn-secondary mb-3">Voltar ao Dashboard</a>
-
-        <div id="formAdicionarAluno" class="form-container">
-            <h4>Formulário de Aluno</h4>
-            <div class="mb-3">
-                <label for="inputId" class="form-label">ID:</label>
-                <input type="number" class="form-control" id="inputId">
-            </div>
-            <div class="mb-3">
-                <label for="inputNome" class="form-label">Nome:</label>
-                <input type="text" class="form-control" id="inputNome">
-            </div>
-            <div class="mb-3">
-                <label for="inputApelido" class="form-label">Apelido:</label>
-                <input type="text" class="form-control" id="inputApelido">
-            </div>
-            <div class="mb-3">
-                <label for="inputCurso" class="form-label">Curso:</label>
-                <input type="text" class="form-control" id="inputCurso">
-            </div>
-            <div class="mb-3">
-                <label for="inputAno" class="form-label">Ano Curricular:</label>
-                <input type="text" class="form-control" id="inputAno">
-            </div>
-            <button id="btnAdicionarAlunoForm" class="btn btn-primary">Salvar Aluno</button>
-            <button id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+        <div class="d-flex flex-wrap justify-content-center mb-3">
+            <button id="btnAdicionarAluno" class="btn btn-success">Adicionar Novo Aluno</button>
+            <button id="btnDeletarAluno" class="btn btn-danger">Deletar Aluno</button>
+            <a href="dashboard.html" class="btn btn-secondary">Voltar ao Dashboard</a>
         </div>
 
-        <table class="table table-striped" id="tabelaAlunos">
+        <div id="formAdicionarAluno" class="form-container"> <!-- ID correto para formulário de Aluno -->
+            <h4>Formulário de Aluno</h4>
+            <div class="mb-3">
+                <label for="inputIdAluno" class="form-label">ID:</label> <!-- ID correto para input de Aluno -->
+                <input type="number" class="form-control" id="inputIdAluno">
+            </div>
+            <div class="mb-3">
+                <label for="inputNomeAluno" class="form-label">Nome:</label> <!-- ID correto para input de Aluno -->
+                <input type="text" class="form-control" id="inputNomeAluno">
+            </div>
+            <div class="mb-3">
+                <label for="inputApelidoAluno" class="form-label">Apelido:</label> <!-- ID correto para input de Aluno -->
+                <input type="text" class="form-control" id="inputApelidoAluno">
+            </div>
+            <div class="mb-3">
+                <label for="inputCursoAluno" class="form-label">Curso:</label> <!-- ID correto para input de Aluno -->
+                <input type="text" class="form-control" id="inputCursoAluno">
+            </div>
+            <div class="mb-3">
+                <label for="inputAnoCurricularAluno" class="form-label">Ano Curricular:</label> <!-- ID correto para input de Aluno -->
+                <input type="text" class="form-control" id="inputAnoCurricularAluno">
+            </div>
+            <div class="d-flex justify-content-end mt-4">
+                <button id="btnAdicionarAlunoForm" class="btn btn-primary me-2">Salvar Aluno</button>
+                <button id="btnCancelarAluno" class="btn btn-secondary">Cancelar</button>
+            </div>
+        </div>
+
+        <table class="table table-striped" id="tabelaAlunos"> <!-- ID correto para tabela de Alunos -->
             <thead>
                 <tr>
                     <th>ID</th>
@@ -81,10 +215,12 @@
                 </tr>
             </thead>
             <tbody>
-                </tbody>
+                <!-- Os dados dos alunos serão inseridos aqui pelo JavaScript -->
+            </tbody>
         </table>
     </div>
 
-    <script src="listaraluno.js"></script> </body>
-
+    <!-- Script CORRETO para listar alunos -->
+    <script src="listaraluno.js"></script>
+</body>
 </html>

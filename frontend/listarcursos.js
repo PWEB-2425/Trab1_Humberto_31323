@@ -1,4 +1,4 @@
-// listarcursos.js
+// frontend/listarcursos.js
 
 // Obtenção de referências para elementos DOM
 const tabelaCursosElement = document.getElementById("tabelaCursos"); // Referência à tabela completa
@@ -7,11 +7,7 @@ const tabelaCursosTbody = tabelaCursosElement ? tabelaCursosElement.getElementsB
 // Validação inicial dos elementos cruciais
 if (!tabelaCursosTbody) {
     console.error("Erro CRÍTICO: Elemento tbody da tabela de cursos (id='tabelaCursos') não encontrado ou HTML malformado!");
-    // Não use alert() em produção, mas para depuração pode ser útil inicialmente.
-    // alert("Erro: Não foi possível encontrar a área para exibir os cursos. Verifique o HTML e o console.");
-    // Saia do script se o elemento principal não for encontrado
-    // return; // Esta linha impediria a execução de outras partes se fosse um script standalone.
-    // Como está dentro do DOMContentLoaded, a depuração continuará.
+    // alert("Erro: Não foi possível encontrar a área para exibir os cursos. Verifique o HTML e o console."); // Mantenha para depuração inicial se necessário
 }
 
 // Referências aos botões e formulário, verificando a existência
@@ -93,7 +89,6 @@ async function carregarCursos() {
 
             // Assegure-se de que 'curso.id', 'curso.Nome' e 'curso.Sigla'
             // correspondem EXATAMENTE às chaves no seu bd.json.
-            // Se as chaves no bd.json forem 'name' e 'sigla' (minúsculas), você deve usar curso.name e curso.sigla aqui.
             novaLinha.insertCell(0).textContent = curso.id;
             novaLinha.insertCell(1).textContent = curso.Nome;
             novaLinha.insertCell(2).textContent = curso.Sigla;
@@ -109,7 +104,7 @@ async function carregarCursos() {
         celulaErro.textContent = "Erro inesperado ao carregar cursos. Verifique o console do navegador.";
         celulaErro.style.color = "red";
         celulaErro.style.textAlign = "center";
-        // alert("Erro ao carregar cursos. Verifique o console para mais detalhes."); // Evite alerts em produção
+        // alert("Erro ao carregar cursos. Verifique o console para mais detalhes."); // Mantenha para depuração inicial se necessário
     }
 }
 

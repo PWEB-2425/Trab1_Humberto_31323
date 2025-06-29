@@ -1,35 +1,192 @@
-// (Seu código login.js - não precisa de alterações)
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Estilos globais */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a; /* Fundo muito escuro/preto */
+            color: #f0f0f0; /* Cor do texto principal (branco acinzentado) */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center; /* Centraliza verticalmente na página de login */
+        }
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+        .container {
+            background-color: #2b2b2b; /* Fundo mais claro para o conteúdo principal */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 450px; /* Largura menor para o formulário de login */
+            box-sizing: border-box;
+        }
 
-            const login = document.getElementById('loginInput').value;
-            const password = document.getElementById('passwordInput').value;
+        h1, h4 {
+            color: #ff0088; /* Cor rosa vibrante para títulos */
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
 
-            try {
-                const response = await fetch('http://localhost:3000/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ login, password })
-                });
+        /* Estilo da tabela: AGORA BRANCA COM TEXTO ESCURO */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white; /* Fundo da tabela branco */
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+            color: #212529; /* Cor do texto das células (quase preto) */
+        }
+        th {
+            background-color: #e9ecef; /* Fundo do cabeçalho da tabela (cinza muito claro) */
+            color: #ff0088; /* Texto rosa para o cabeçalho */
+            font-weight: bold;
+            border-bottom: 2px solid #ff0088;
+        }
 
-                const data = await response.json();
+        /* Estilo para linhas zebradas (opcional, para melhor leitura) */
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2; /* Fundo para linhas pares (cinza muito claro) */
+        }
+        tbody tr:nth-child(odd) {
+            background-color: white; /* Fundo para linhas ímpares (branco) */
+        }
 
-                if (response.ok) {
-                    alert(data.message);
-                    window.location.href = 'dashboard.html'; // Redireciona para o dashboard após login bem-sucedido
-                } else {
-                    alert(data.error);
-                }
-            } catch (error) {
-                console.error('Erro de rede ou servidor:', error);
-                alert('Erro ao tentar fazer login. Verifique sua conexão ou o servidor.');
+
+        /* Estilo para formulários e seus inputs */
+        .form-container {
+            margin-top: 30px;
+            padding: 25px;
+            border: 1px solid #ff0088; /* Borda rosa para o formulário */
+            border-radius: 10px;
+            background-color: #222222; /* Fundo escuro para o formulário */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            /* display: none; Não queremos que o formulário de login esteja escondido por padrão */
+        }
+
+        .form-label {
+            color: #f0f0f0;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            background-color: #333333;
+            border: 1px solid #555555;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: #ff0088;
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 136, 0.25);
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+
+        /* Estilo dos botões (Bootstrap) */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+            margin-right: 10px;
+        }
+
+        .btn-success {
+            background-color: #ff0088;
+            border-color: #ff0088;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            background-color: #e6007a;
+            border-color: #e6007a;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: #cc0055;
+            border-color: #cc0055;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background-color: #b3004b;
+            border-color: #b3004b;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #555555;
+            border-color: #555555;
+            color: #ffffff;
+        }
+        .btn-secondary:hover {
+            background-color: #444444;
+            border-color: #444444;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: #ff0088;
+            border-color: #ff0088;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #e6007a;
+            border-color: #e6007a;
+        }
+
+        /* Ajustes de responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
             }
-        });
-    }
-});
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Login</h1>
+        <form id="loginForm" class="form-container" style="display: block;"> <!-- Exibido por padrão -->
+            <div class="mb-3">
+                <label for="loginUsername" class="form-label">Usuário:</label>
+                <input type="text" class="form-control" id="loginUsername" required>
+            </div>
+            <div class="mb-3">
+                <label for="loginPassword" class="form-label">Senha:</label>
+                <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            </div>
+        </form>
+        <p id="loginMessage" class="text-center mt-3" style="color: red;"></p>
+    </div>
+
+    <!-- Script para lidar com o login (você precisará criar este arquivo) -->
+    <script src="login.js"></script>
+</body>
+</html>

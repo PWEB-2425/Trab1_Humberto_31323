@@ -34,7 +34,7 @@ app.use(express.json());
 // --- DEBUG: Log de todos os pedidos recebidos ---
 // Este middleware é executado para cada requisição e loga o método e a URL original.
 app.use((req, res, next) => {
-    console.log(`[REQUEST] ${req.method} ${req.originalUrl}`);
+    console.log(`[REQUEST RECEIVED] ${req.method} ${req.originalUrl}`);
     next(); // Continua para o próximo middleware na cadeia
 });
 // -------------------------------------------------
@@ -42,24 +42,34 @@ app.use((req, res, next) => {
 // Define o caminho para a pasta 'frontend'.
 // Assumindo que 'server.js' está em 'backend' e 'frontend' é um diretório irmão.
 const frontendPath = path.join(__dirname, '..', 'frontend');
-console.log(`[DEBUG] express.static a servir de: ${frontendPath}`);
+console.log(`[SERVER START] Caminho configurado para express.static: ${frontendPath}`);
 
 // **IMPORTANTE: Configura o Express para servir arquivos estáticos.**
-// Esta é a parte mais crítica para servir arquivos como HTML, CSS, JavaScript e imagens.
-// Se um arquivo é encontrado pelo `express.static` (ex: /listarcursos.js), ele é servido
-// e a requisição não avança para as rotas definidas abaixo.
+// ESTA LINHA DEVE SER COLOCADA AQUI, ANTES DE QUALQUER OUTRA ROTA `app.get()` OU `app.post()`
+// QUE NÃO SEJA UM MIDDLEWARE GLOBAL (como `app.use(express.json())`).
+// Se um ficheiro (ex: /listarcursos.js) é encontrado pelo `express.static`, ele é servido
+// e a requisição NÃO AVANÇA para as rotas definidas abaixo.
 app.use(express.static(frontendPath));
 
-// --- Debugging Específico para o tipo MIME de JS ---
-// Este middleware verifica e loga requisições que terminam em '.js'.
-// Se o erro persistir, isso pode ajudar a identificar se a requisição está
-// chegando aqui e qual tipo de resposta está sendo gerada.
+// --- Debugging Adicional para ficheiros JS específicos ---
+// Este middleware verifica e loga requisições que terminam em '.js' *APÓS* express.static.
+// Se uma requisição .js chegar aqui, significa que express.static NÃO a serviu.
 app.use((req, res, next) => {
     if (req.originalUrl.endsWith('.js')) {
-        console.log(`[DEBUG MIME] Requisição para JS: ${req.originalUrl}`);
-        // Se você suspeitar que o tipo MIME está incorreto APÓS a verificação do express.static,
-        // você poderia tentar forçar o Content-Type aqui para teste, mas não é o ideal.
-        // res.setHeader('Content-Type', 'application/javascript');
+        console.warn(`[DEBUG JS WARN] Requisição para JS (${req.originalUrl}) passou por express.static. Isso não deveria acontecer se o ficheiro existe.`);
+        // Tente servir o ficheiro explicitamente aqui para diagnóstico
+        const filePath = path.join(frontendPath, req.originalUrl);
+        fs.access(filePath)
+            .then(() => {
+                console.log(`[DEBUG JS WARN] Ficheiro JS encontrado em: ${filePath}. Tentando enviar com Content-Type correto.`);
+                res.setHeader('Content-Type', 'application/javascript');
+                res.sendFile(filePath);
+            })
+            .catch(() => {
+                console.error(`[DEBUG JS ERROR] Ficheiro JS NÃO encontrado em: ${filePath}.`);
+                next(); // Passa para o próximo middleware (provavelmente o 404)
+            });
+        return; // Retorna para evitar next() imediato, já que a promessa está a lidar com a resposta
     }
     next();
 });
@@ -67,7 +77,7 @@ app.use((req, res, next) => {
 // --- Rotas para servir páginas HTML específicas (com checkAuth onde aplicável) ---
 // Estas rotas são usadas para servir arquivos HTML quando há uma lógica específica
 // (como a verificação de autenticação) antes de entregá-los.
-// Elas só serão acionadas se `express.static` não tiver encontrado um arquivo correspondente.
+// Elas só serão acionadas se `express.static` não tiver encontrado um ficheiro correspondente.
 
 // Rota principal, serve a página de login.
 app.get('/', (req, res) => {
@@ -249,7 +259,7 @@ app.post('/login', (req, res) => {
 });
 
 // --- Middleware para lidar com 404 (Not Found) ---
-// Este middleware será executado se nenhuma das rotas anteriores (incluindo express.static)
+// Este middleware será executado se nenhuma das rotas anteriores (incluindo express.static e o middleware de debug JS)
 // conseguir lidar com a requisição.
 app.use((req, res, next) => {
     console.log(`[404 NOT FOUND] Recurso não encontrado: ${req.originalUrl}`);
