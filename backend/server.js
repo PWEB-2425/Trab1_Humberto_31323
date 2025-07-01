@@ -6,7 +6,7 @@ const path = require('path');       // Importa o módulo 'path' para trabalhar c
 const fs = require('fs').promises; // Importa o módulo 'fs' (File System) para operações de arquivo, usando a versão baseada em Promises para lidar com assincronia de forma mais limpa.
 
 const app = express(); // Cria uma instância da aplicação Express.
-const PORT = 3000;     // Define a porta em que o servidor irá escutar.
+const PORT = process.env.PORT || 3000; // Usa a porta do ambiente (Render) ou 3000 (local)    // Define a porta em que o servidor irá escutar.
 
 // Variável de estado de autenticação simples.
 // NOTA: Em um ambiente de produção real, use sessões robustas (como `express-session` com `connect-mongo`)
