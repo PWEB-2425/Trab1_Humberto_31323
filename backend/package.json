@@ -9,7 +9,7 @@
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.21.2",
-        "mongoose": "^5.10.9"
+        "mongoose": "^5.13.23"
     },
     "author": "",
     "license": "ISC",
