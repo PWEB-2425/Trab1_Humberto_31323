@@ -25,22 +25,25 @@ if (!MONGODB_URI) {
         });
 }
 
-// --- Definição de Schemas e Modelos Mongoose ---
-// Estes são necessários para interagir com o MongoDB
+// --- Definição de Schemas e Modelos Mongoose (Corrigidos para corresponder ao seu JSON) ---
+
+// Schema para Aluno
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
-    nome: { type: String, required: true },
-    idade: { type: Number, required: true },
-    curso: { type: String, required: true }
-}, { collection: 'alunos' }); // Define o nome da coleção no MongoDB
+    Nome: { type: String, required: true },
+    Apelido: { type: String, required: true },
+    Curso: { type: String, required: true },
+    Ano_Curricular: { type: String, required: true }
+}, { collection: 'alunos' });
 
 const Aluno = mongoose.model('Aluno', alunoSchema);
 
+// Schema para Curso
 const cursoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
-    nome: { type: String, required: true },
-    duracao: { type: String, required: true }
-}, { collection: 'cursos' }); // Define o nome da coleção no MongoDB
+    Nome: { type: String, required: true },
+    Sigla: { type: String, required: true },
+}, { collection: 'cursos' });
 
 const Curso = mongoose.model('Curso', cursoSchema);
 
@@ -54,7 +57,7 @@ app.use((req, res, next) => {
 });
 
 // --- Autenticação (Exemplo Simples - usar JWT ou sessões em produção) ---
-let isAuthenticated = false; // Estado de autenticação simples
+let isAuthenticated = false;
 
 function checkAuth(req, res, next) {
     if (!isAuthenticated) {
@@ -68,7 +71,6 @@ function checkAuth(req, res, next) {
 const frontendPath = path.join(__dirname, '..', 'frontend');
 console.log(`[SERVER START] Caminho configurado para express.static: ${frontendPath}`);
 
-// Rota principal (raiz), serve a página de login.
 app.get('/', (req, res) => {
     console.log("Rota para login acessada (prioritária)");
     res.sendFile(path.join(frontendPath, 'login.html'), (err) => {
@@ -79,7 +81,6 @@ app.get('/', (req, res) => {
     });
 });
 
-// Serve arquivos estáticos do frontend
 app.use(express.static(frontendPath));
 
 // --- Rotas para servir páginas HTML específicas (com checkAuth onde aplicável) ---
@@ -103,12 +104,11 @@ app.get('/listarcursos.html', checkAuth, (req, res) => {
     res.sendFile(path.join(frontendPath, 'listarcursos.html'));
 });
 
-// Caminho para o `bd.json`
 const bdPath = path.join(__dirname, '../mock-data/bd.json');
 
-// --- Rotas da API para Alunos (Dual-Write: JSON e MongoDB) ---
+// --- Rotas da API para Alunos (Dual-Write: GET, POST, PUT, DELETE) ---
 
-// Rota GET: Lê APENAS do JSON
+// GET: Lê APENAS do JSON
 app.get('/alunos', async (req, res) => {
     console.log("Rota /alunos acessada");
     try {
@@ -121,7 +121,7 @@ app.get('/alunos', async (req, res) => {
     }
 });
 
-// Rota POST: Escreve no JSON e depois no MongoDB
+// POST: Escreve no JSON e depois no MongoDB
 app.post('/alunos', async (req, res) => {
     try {
         const data = await fs.readFile(bdPath, 'utf8');
@@ -135,8 +135,7 @@ app.post('/alunos', async (req, res) => {
         await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
         console.log("Aluno adicionado com sucesso ao JSON.");
 
-        // --- Tentar adicionar ao MongoDB ---
-        if (mongoose.connection.readyState === 1) { // Verifica se Mongoose está conectado
+        if (mongoose.connection.readyState === 1) {
             try {
                 const novoAluno = new Aluno(req.body);
                 await novoAluno.save();
@@ -146,7 +145,6 @@ app.post('/alunos', async (req, res) => {
                     console.warn(`AVISO: Aluno com ID ${req.body.id} já existe no MongoDB (ignorando).`);
                 } else {
                     console.error("Erro ao adicionar aluno ao MongoDB:", mongoErr);
-                    // Não retorna erro 500, pois a operação no JSON foi bem-sucedida
                 }
             }
         } else {
@@ -160,6 +158,52 @@ app.post('/alunos', async (req, res) => {
     }
 });
 
+// PUT: Atualiza no JSON e depois no MongoDB
+app.put('/alunos/:id', async (req, res) => {
+    const alunoId = parseInt(req.params.id, 10);
+    try {
+        const data = await fs.readFile(bdPath, 'utf8');
+        let jsonData = JSON.parse(data);
+        const alunoIndex = jsonData.alunos.findIndex(a => a.id === alunoId);
+
+        if (alunoIndex !== -1) {
+            // Atualiza no JSON
+            jsonData.alunos[alunoIndex] = { ...jsonData.alunos[alunoIndex], ...req.body, id: alunoId };
+            await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
+            console.log(`Aluno com ID ${alunoId} atualizado com sucesso no JSON.`);
+
+            // Tentar atualizar no MongoDB
+            if (mongoose.connection.readyState === 1) {
+                try {
+                    const updatedAluno = await Aluno.findOneAndUpdate(
+                        { id: alunoId },
+                        req.body, // Usa o corpo da requisição para atualizar os campos
+                        { new: true, runValidators: true, upsert: false } // 'new: true' retorna o documento atualizado, 'runValidators' valida
+                    );
+                    if (updatedAluno) {
+                        console.log(`Aluno com ID ${alunoId} atualizado com sucesso no MongoDB.`);
+                    } else {
+                        console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no MongoDB para atualização.`);
+                    }
+                } catch (mongoErr) {
+                    console.error("Erro ao atualizar aluno no MongoDB:", mongoErr);
+                }
+            } else {
+                console.warn("AVISO: Mongoose não conectado, aluno não atualizado no MongoDB.");
+            }
+
+            res.status(200).json({ message: "Aluno atualizado com sucesso!", aluno: jsonData.alunos[alunoIndex] });
+        } else {
+            res.status(404).json({ error: "Aluno não encontrado no JSON para atualização." });
+        }
+    } catch (err) {
+        console.error("Erro ao atualizar aluno no JSON:", err);
+        res.status(500).json({ erro: "Erro interno do servidor ao atualizar aluno" });
+    }
+});
+
+
+// DELETE: Deleta do JSON e depois do MongoDB
 app.delete('/alunos/:id', async (req, res) => {
     const alunoId = parseInt(req.params.id, 10);
     try {
@@ -173,7 +217,6 @@ app.delete('/alunos/:id', async (req, res) => {
             await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
             console.log(`Aluno com ID ${alunoId} deletado com sucesso do JSON.`);
 
-            // --- Tentar deletar do MongoDB ---
             if (mongoose.connection.readyState === 1) {
                 try {
                     const resultado = await Aluno.deleteOne({ id: alunoId });
@@ -199,9 +242,9 @@ app.delete('/alunos/:id', async (req, res) => {
     }
 });
 
-// --- Rotas da API para Cursos (Dual-Write: JSON e MongoDB) ---
+// --- Rotas da API para Cursos (Dual-Write: GET, POST, PUT, DELETE) ---
 
-// Rota GET: Lê APENAS do JSON
+// GET: Lê APENAS do JSON
 app.get('/cursos', async (req, res) => {
     console.log("Rota /cursos acessada");
     try {
@@ -214,7 +257,7 @@ app.get('/cursos', async (req, res) => {
     }
 });
 
-// Rota POST: Escreve no JSON e depois no MongoDB
+// POST: Escreve no JSON e depois no MongoDB
 app.post('/cursos', async (req, res) => {
     try {
         const data = await fs.readFile(bdPath, 'utf8');
@@ -228,7 +271,6 @@ app.post('/cursos', async (req, res) => {
         await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
         console.log("Curso adicionado com sucesso ao JSON.");
 
-        // --- Tentar adicionar ao MongoDB ---
         if (mongoose.connection.readyState === 1) {
             try {
                 const novoCurso = new Curso(req.body);
@@ -252,6 +294,51 @@ app.post('/cursos', async (req, res) => {
     }
 });
 
+// PUT: Atualiza no JSON e depois no MongoDB
+app.put('/cursos/:id', async (req, res) => {
+    const cursoId = parseInt(req.params.id, 10);
+    try {
+        const data = await fs.readFile(bdPath, 'utf8');
+        let jsonData = JSON.parse(data);
+        const cursoIndex = jsonData.cursos.findIndex(c => c.id === cursoId);
+
+        if (cursoIndex !== -1) {
+            // Atualiza no JSON
+            jsonData.cursos[cursoIndex] = { ...jsonData.cursos[cursoIndex], ...req.body, id: cursoId };
+            await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
+            console.log(`Curso com ID ${cursoId} atualizado com sucesso no JSON.`);
+
+            // Tentar atualizar no MongoDB
+            if (mongoose.connection.readyState === 1) {
+                try {
+                    const updatedCurso = await Curso.findOneAndUpdate(
+                        { id: cursoId },
+                        req.body,
+                        { new: true, runValidators: true, upsert: false }
+                    );
+                    if (updatedCurso) {
+                        console.log(`Curso com ID ${cursoId} atualizado com sucesso no MongoDB.`);
+                    } else {
+                        console.warn(`AVISO: Curso com ID ${cursoId} não encontrado no MongoDB para atualização.`);
+                    }
+                } catch (mongoErr) {
+                    console.error("Erro ao atualizar curso no MongoDB:", mongoErr);
+                }
+            } else {
+                console.warn("AVISO: Mongoose não conectado, curso não atualizado no MongoDB.");
+            }
+
+            res.status(200).json({ message: "Curso atualizado com sucesso!", curso: jsonData.cursos[cursoIndex] });
+        } else {
+            res.status(404).json({ error: "Curso não encontrado no JSON para atualização." });
+        }
+    } catch (err) {
+        console.error("Erro ao atualizar curso no JSON:", err);
+        res.status(500).json({ erro: "Erro interno do servidor ao atualizar curso" });
+    }
+});
+
+// DELETE: Deleta do JSON e depois do MongoDB
 app.delete('/cursos/:id', async (req, res) => {
     const cursoId = parseInt(req.params.id, 10);
     try {
@@ -265,7 +352,6 @@ app.delete('/cursos/:id', async (req, res) => {
             await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
             console.log(`Curso com ID ${cursoId} deletado com sucesso do JSON.`);
 
-            // --- Tentar deletar do MongoDB ---
             if (mongoose.connection.readyState === 1) {
                 try {
                     const resultado = await Curso.deleteOne({ id: cursoId });
