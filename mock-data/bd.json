@@ -34,13 +34,6 @@
       "Apelido": "Fernandes",
       "Curso": "Termalismo e Bem-Estar",
       "Ano_Curricular": "2ºAno"
-    },
-    {
-      "id": 6,
-      "Nome": "Romiro",
-      "Apelido": "Evora",
-      "Curso": "EI",
-      "Ano_Curricular": "3º"
     }
   ],
   "cursos": [
@@ -63,6 +56,11 @@
       "Nome": "Termalismo",
       "Sigla": "TBE",
       "id": 4
+    },
+    {
+      "id": 5,
+      "Nome": "Engenharia Informática",
+      "Sigla": "EI"
     }
   ]
 }
