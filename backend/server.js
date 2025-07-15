@@ -2,16 +2,14 @@
 
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-const fs = require('fs').promises; // Módulo 'fs' para operações de arquivo
-const mongoose = require('mongoose'); // Importa o Mongoose para interagir com o MongoDB
+const path = require('path'); // Mantém para uso potencial com __dirname, mas não para servir frontend
+const fs = require('fs').promises;
+const mongoose = require('mongoose');
 
 const app = express();
-// Usa a porta do ambiente (process.env.PORT, fornecida pelo Render) ou 3000 (para execução local)
 const PORT = process.env.PORT || 3000;
 
 // --- Conexão com o MongoDB ---
-// A string de conexão é lida da variável de ambiente MONGODB_URI
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
@@ -25,8 +23,7 @@ if (!MONGODB_URI) {
         });
 }
 
-// --- Definição de Schemas e Modelos Mongoose (Corrigidos para corresponder ao seu JSON) ---
-
+// --- Definição de Schemas e Modelos Mongoose ---
 // Schema para Aluno
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
@@ -48,7 +45,7 @@ const cursoSchema = new mongoose.Schema({
 const Curso = mongoose.model('Curso', cursoSchema);
 
 // --- Middlewares Globais ---
-app.use(cors());
+app.use(cors()); // Permite que o frontend (Vercel) acesse esta API
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -56,55 +53,39 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- Autenticação (Exemplo Simples - usar JWT ou sessões em produção) ---
-let isAuthenticated = false;
+// --- Autenticação (Exemplo Simples - APENAS para a API, se necessário) ---
+// Se a autenticação for apenas para a API, mantenha. Se for para servir páginas, remova.
+// Para uma API RESTful pura, a autenticação geralmente é tratada por tokens (JWT)
+// em cada requisição, não por estado de sessão no servidor.
+let isAuthenticated = false; // Esta variável não é mais relevante para servir páginas.
 
+// Rota de Login (para a API)
+app.post('/login', (req, res) => {
+    console.log("Tentativa de login API:", req.body);
+    const { login, password } = req.body;
+    if (login === 'admin' && password === 'admin') {
+        isAuthenticated = true; // Isso ainda é um estado interno do servidor, não para o cliente
+        res.json({ message: "Login bem-sucedido" });
+    } else {
+        isAuthenticated = false;
+        res.status(401).json({ error: "Login ou senha incorretos" });
+    }
+});
+
+// A função checkAuth só será usada para rotas da API que precisam de autenticação
 function checkAuth(req, res, next) {
+    // Para uma API RESTful, aqui você verificaria um token JWT no header Authorization
+    // Por enquanto, mantém a lógica simples de isAuthenticated para teste
     if (!isAuthenticated) {
-        console.log(`[AUTH] Acesso não autorizado a ${req.originalUrl}. Redirecionando para /.`);
-        return res.status(401).json({ error: "Não autorizado. Por favor, faça login." });
+        console.log(`[AUTH] Acesso não autorizado à API ${req.originalUrl}.`);
+        return res.status(401).json({ error: "Não autorizado. Por favor, faça login na API." });
     }
     next();
 }
 
-// --- Rotas para servir páginas HTML estáticas ---
-const frontendPath = path.join(__dirname, '..', 'frontend');
-console.log(`[SERVER START] Caminho configurado para express.static: ${frontendPath}`);
 
-app.get('/', (req, res) => {
-    console.log("Rota para login acessada (prioritária)");
-    res.sendFile(path.join(frontendPath, 'login.html'), (err) => {
-        if (err) {
-            console.error('[SERVER ERROR] Erro ao enviar login.html:', err.message);
-            res.status(500).send('Erro 500: Erro Interno do Servidor ao carregar login.html.');
-        }
-    });
-});
-
-app.use(express.static(frontendPath));
-
-// --- Rotas para servir páginas HTML específicas (com checkAuth onde aplicável) ---
-app.get('/home', checkAuth, (req, res) => {
-    console.log("Rota para menuinicial acessada");
-    res.sendFile(path.join(frontendPath, 'menuinicial.html'));
-});
-
-app.get('/dashboard', checkAuth, (req, res) => {
-    console.log("Rota para dashboard acessada");
-    res.sendFile(path.join(frontendPath, 'dashboard.html'));
-});
-
-app.get('/listaralunos.html', checkAuth, (req, res) => {
-    console.log("Rota para listaralunos.html acessada (via checkAuth).");
-    res.sendFile(path.join(frontendPath, 'listaralunos.html'));
-});
-
-app.get('/listarcursos.html', checkAuth, (req, res) => {
-    console.log("Rota para listarcursos.html acessada (via checkAuth).");
-    res.sendFile(path.join(frontendPath, 'listarcursos.html'));
-});
-
-const bdPath = path.join(__dirname, '../mock-data/bd.json');
+// --- Caminho para o JSON de mock-data ---
+const bdPath = path.join(__dirname, '..', 'mock-data', 'bd.json');
 
 // --- Rotas da API para Alunos (Dual-Write: GET, POST, PUT, DELETE) ---
 
@@ -167,18 +148,16 @@ app.put('/alunos/:id', async (req, res) => {
         const alunoIndex = jsonData.alunos.findIndex(a => a.id === alunoId);
 
         if (alunoIndex !== -1) {
-            // Atualiza no JSON
             jsonData.alunos[alunoIndex] = { ...jsonData.alunos[alunoIndex], ...req.body, id: alunoId };
             await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
             console.log(`Aluno com ID ${alunoId} atualizado com sucesso no JSON.`);
 
-            // Tentar atualizar no MongoDB
             if (mongoose.connection.readyState === 1) {
                 try {
                     const updatedAluno = await Aluno.findOneAndUpdate(
                         { id: alunoId },
-                        req.body, // Usa o corpo da requisição para atualizar os campos
-                        { new: true, runValidators: true, upsert: false } // 'new: true' retorna o documento atualizado, 'runValidators' valida
+                        req.body,
+                        { new: true, runValidators: true, upsert: false }
                     );
                     if (updatedAluno) {
                         console.log(`Aluno com ID ${alunoId} atualizado com sucesso no MongoDB.`);
@@ -201,7 +180,6 @@ app.put('/alunos/:id', async (req, res) => {
         res.status(500).json({ erro: "Erro interno do servidor ao atualizar aluno" });
     }
 });
-
 
 // DELETE: Deleta do JSON e depois do MongoDB
 app.delete('/alunos/:id', async (req, res) => {
@@ -303,12 +281,10 @@ app.put('/cursos/:id', async (req, res) => {
         const cursoIndex = jsonData.cursos.findIndex(c => c.id === cursoId);
 
         if (cursoIndex !== -1) {
-            // Atualiza no JSON
             jsonData.cursos[cursoIndex] = { ...jsonData.cursos[cursoIndex], ...req.body, id: cursoId };
             await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
             console.log(`Curso com ID ${cursoId} atualizado com sucesso no JSON.`);
 
-            // Tentar atualizar no MongoDB
             if (mongoose.connection.readyState === 1) {
                 try {
                     const updatedCurso = await Curso.findOneAndUpdate(
@@ -377,29 +353,17 @@ app.delete('/cursos/:id', async (req, res) => {
     }
 });
 
-// --- Rota de Autenticação ---
-app.post('/login', (req, res) => {
-    console.log("Tentativa de login:", req.body);
-    const { login, password } = req.body;
-    if (login === 'admin' && password === 'admin') {
-        isAuthenticated = true;
-        res.json({ message: "Login bem-sucedido" });
-    } else {
-        isAuthenticated = false;
-        res.status(401).json({ error: "Login ou senha incorretos" });
-    }
-});
-
 // --- Middleware para lidar com 404 (Not Found) ---
+// Este middleware só será acionado se nenhuma rota da API for correspondida
 app.use((req, res, next) => {
-    console.log(`[404 NOT FOUND] Recurso não encontrado: ${req.originalUrl}`);
-    res.status(404).send('<h1>Erro 404: Recurso não encontrado</h1><p>O recurso que você procura não existe.</p>');
+    console.log(`[404 NOT FOUND] Recurso da API não encontrado: ${req.originalUrl}`);
+    res.status(404).json({ error: 'Recurso da API não encontrado.' });
 });
 
 // --- Middleware para lidar com erros gerais ---
 app.use((err, req, res, next) => {
     console.error(`[SERVER ERROR] ${err.stack}`);
-    res.status(500).send('<h1>Erro 500: Erro Interno do Servidor</h1><p>Ocorreu um erro inesperado no servidor.</p>');
+    res.status(500).json({ error: 'Erro interno do servidor API.', details: err.message });
 });
 
 // Inicia o servidor
