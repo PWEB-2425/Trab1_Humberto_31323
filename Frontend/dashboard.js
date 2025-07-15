@@ -1,7 +1,7 @@
 // frontend/dashboard.js
 
-// URL base da sua API de backend.
-const BASE_URL = "http://localhost:3000";
+// URL base da sua API de backend no Render.
+const API_BASE_URL = "https://trab1-humberto-31323-58n5.onrender.com";
 
 // Arrays para armazenar todos os alunos e cursos que serão carregados do backend.
 // Estes arrays serão usados para realizar as pesquisas localmente no frontend.
@@ -31,7 +31,7 @@ const noCursoResultsMessage = document.getElementById("noCursoResults"); // Par�
 async function fetchAllAlunos() {
     try {
         console.log("[DASHBOARD] Buscando todos os alunos...");
-        const response = await fetch(`${BASE_URL}/alunos`); // Faz a requisição HTTP.
+        const response = await fetch(`${API_BASE_URL}/alunos`); // Faz a requisição HTTP usando a URL da API.
         // Verifica se a resposta da requisição foi bem-sucedida (status 200 OK).
         if (!response.ok) {
             throw new Error(`Erro HTTP ao buscar alunos: ${response.status} ${response.statusText}`);
@@ -51,7 +51,7 @@ async function fetchAllAlunos() {
 async function fetchAllCursos() {
     try {
         console.log("[DASHBOARD] Buscando todos os cursos...");
-        const response = await fetch(`${BASE_URL}/cursos`); // Faz a requisição HTTP.
+        const response = await fetch(`${API_BASE_URL}/cursos`); // Faz a requisição HTTP usando a URL da API.
         // Verifica se a resposta da requisição foi bem-sucedida.
         if (!response.ok) {
             throw new Error(`Erro HTTP ao buscar cursos: ${response.status} ${response.statusText}`);

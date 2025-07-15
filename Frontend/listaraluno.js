@@ -33,7 +33,7 @@ const inputCursoAluno = document.getElementById("inputCursoAluno");
 const inputAnoCurricularAluno = document.getElementById("inputAnoCurricularAluno");
 
 // URL base para todas as requisições à API do backend.
-const BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://trab1-humberto-31323-58n5.onrender.com"; // URL da sua API no Render
 
 /**
  * Função assíncrona para carregar e exibir a lista de alunos na tabela.
@@ -49,9 +49,9 @@ async function carregarAlunos() {
     tabelaAlunosTbody.innerHTML = ''; // Limpa qualquer conteúdo existente na tabela antes de adicionar novos dados.
 
     try {
-        console.log(`[FETCH ALUNOS] Tentando buscar dados de: ${BASE_URL}/alunos`);
+        console.log(`[FETCH ALUNOS] Tentando buscar dados de: ${API_BASE_URL}/alunos`);
         // Faz uma requisição GET assíncrona para a rota '/alunos' do backend.
-        const resposta = await fetch(`${BASE_URL}/alunos`);
+        const resposta = await fetch(`${API_BASE_URL}/alunos`);
         console.log("[FETCH ALUNOS] Resposta da API recebida (objeto Response):", resposta);
 
         // Verifica se a resposta HTTP foi bem-sucedida (status 2xx).
@@ -108,7 +108,7 @@ async function carregarAlunos() {
             novaLinha.insertCell(2).textContent = aluno.Apelido;
             novaLinha.insertCell(3).textContent = aluno.Curso;
             novaLinha.insertCell(4).textContent = aluno.Ano_Curricular;
-            console.log("  [RENDER ALUNOS] Adicionado aluno:", aluno.Nome);
+            console.log("   [RENDER ALUNOS] Adicionado aluno:", aluno.Nome);
         });
         console.log("--- carregarAlunos() finalizada com sucesso ---");
     } catch (error) {
@@ -130,14 +130,16 @@ async function carregarAlunos() {
 async function adicionarAluno() {
     // Obtém os valores dos inputs do formulário.
     const id = parseInt(inputIdAluno.value, 10); // Converte o ID para inteiro.
-    const nome = inputNomeAluno.value.trim();     // .trim() remove espaços em branco antes/depois.
+    const nome = inputNomeAluno.value.trim();    // .trim() remove espaços em branco antes/depois.
     const apelido = inputApelidoAluno.value.trim();
     const curso = inputCursoAluno.value.trim();
     const anoCurricular = inputAnoCurricularAluno.value.trim();
 
     // Validação dos campos do formulário.
     if (isNaN(id) || !nome || !apelido || !curso || !anoCurricular) {
-        alert("Por favor, preencha todos os campos corretamente."); // Alerta o utilizador sobre campos incompletos.
+        // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
+        // Exemplo: showCustomAlert("Por favor, preencha todos os campos corretamente.");
+        alert("Por favor, preencha todos os campos corretamente.");
         return; // Sai da função.
     }
 
@@ -147,13 +149,14 @@ async function adicionarAluno() {
     try {
         console.log("[ADD ALUNO] Tentando adicionar aluno:", novoAluno);
         // Faz uma requisição POST assíncrona para a rota '/alunos' do backend.
-        const resposta = await fetch(`${BASE_URL}/alunos`, {
+        const resposta = await fetch(`${API_BASE_URL}/alunos`, {
             method: "POST", // Método HTTP POST para criar um novo recurso.
             headers: { "Content-Type": "application/json" }, // Indica que o corpo da requisição é JSON.
             body: JSON.stringify(novoAluno), // Converte o objeto `novoAluno` para uma string JSON.
         });
 
         if (resposta.ok) { // Se a resposta for bem-sucedida (status 2xx).
+            // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
             alert("Aluno adicionado com sucesso!"); // Notifica o utilizador.
             carregarAlunos(); // Recarrega a tabela para exibir o novo aluno.
             // Limpa os campos do formulário após a adição bem-sucedida.
@@ -165,11 +168,13 @@ async function adicionarAluno() {
             formAdicionarAluno.style.display = "none"; // Esconde o formulário.
         } else { // Se a resposta indicar um erro.
             const erroData = await resposta.json(); // Tenta ler o corpo da resposta como JSON para obter detalhes do erro.
+            // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
             alert(`Erro ao adicionar aluno: ${erroData.erro || resposta.statusText}`); // Alerta o utilizador com a mensagem de erro.
             console.error("[ADD ALUNO ERROR] Erro ao adicionar aluno:", resposta.status, erroData); // Loga o erro detalhado.
         }
     } catch (error) { // Captura erros de rede ou outros.
         console.error("[ADD ALUNO CATCH] Erro ao adicionar aluno:", error);
+        // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
         alert("Erro ao adicionar aluno. Verifique o console para mais detalhes.");
     }
 }
@@ -180,17 +185,20 @@ async function adicionarAluno() {
  */
 async function deletarAluno() {
     // Solicita o ID do aluno ao utilizador através de um prompt.
+    // ATENÇÃO: Use um modal customizado para entrada de dados em vez de prompt() para melhor UX.
     const idInput = prompt("Digite o ID do aluno para deletar:");
     const id = parseInt(idInput, 10); // Converte a entrada para inteiro.
 
     // Validação do ID.
     if (isNaN(id)) {
+        // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
         alert("ID inválido. Por favor, digite um número.");
         return;
     }
 
     // Pede confirmação ao utilizador antes de deletar, para evitar exclusões acidentais.
     // 'confirm()' é usado aqui, mas para UX moderna, um modal personalizado seria melhor.
+    // ATENÇÃO: Use um modal customizado para confirmação em vez de confirm() para melhor UX.
     if (!confirm(`Tem certeza que deseja deletar o aluno com ID ${id}?`)) {
         return; // Sai da função se o utilizador cancelar.
     }
@@ -198,20 +206,23 @@ async function deletarAluno() {
     try {
         console.log(`[DELETE ALUNO] Tentando deletar aluno com ID: ${id}`);
         // Faz uma requisição DELETE assíncrona para a rota '/alunos/:id' do backend.
-        const resposta = await fetch(`${BASE_URL}/alunos/${id}`, {
+        const resposta = await fetch(`${API_BASE_URL}/alunos/${id}`, {
             method: "DELETE", // Método HTTP DELETE para remover um recurso.
         });
 
         if (resposta.ok) { // Se a resposta for bem-sucedida.
+            // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
             alert("Aluno deletado com sucesso!"); // Notifica o utilizador.
             carregarAlunos(); // Recarrega a tabela para refletir a exclusão.
         } else { // Se a resposta indicar um erro.
             const erroData = await resposta.json(); // Tenta ler o JSON de erro.
+            // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
             alert(`Erro ao deletar aluno: ${erroData.error || resposta.statusText}`); // Alerta o utilizador.
             console.error("[DELETE ALUNO ERROR] Erro ao deletar aluno:", resposta.status, erroData); // Loga o erro.
         }
     } catch (error) { // Captura erros de rede ou outros.
         console.error("[DELETE ALUNO CATCH] Erro ao deletar aluno:", error);
+        // ATENÇÃO: Use um modal customizado em vez de alert() para melhor UX.
         alert("Erro ao deletar aluno. Verifique o console para mais detalhes.");
     }
 }
