@@ -1,5 +1,6 @@
 // frontend/login.js
 
+
 // ATENÇÃO: SUBSTITUA 'https://SUA_URL_DA_API_NO_RENDER.onrender.com' PELA URL REAL DA SUA API NO RENDER!
 // Exemplo: 'https://trab1-humberto-31323-58n5.onrender.com'
 const API_BASE_URL = 'https://SUA_URL_DA_API_NO_RENDER.onrender.com';
