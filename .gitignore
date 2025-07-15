@@ -1,0 +1,24 @@
+# Node modules
+node_modules/
+
+# Frontend specific (if any generated builds)
+frontend/node_modules/
+frontend/dist/  # Se o seu frontend gerar uma pasta 'dist' ou 'build'
+frontend/build/
+
+# Backend specific
+backend/node_modules/
+
+# Mock server specific (if it has its own node_modules)
+mock-server/node_modules/
+
+# Log files
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Vercel specific
+.vercel/
