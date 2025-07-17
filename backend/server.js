@@ -11,8 +11,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Variáveis de Ambiente ---
-const MONGODB_URI = process.env.MONGODB_URI;
-const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_muito_segura'; // Use uma chave forte em produção!
+const MONGODB_URI = process.env.MONGODB_URI; // Certifique-se que esta variável está definida no Render!
+const JWT_SECRET = process.env.JWT_SECRET; // ATENÇÃO: Esta variável DEVE ser definida no ambiente do Render com uma chave segura.
 
 // --- Conexão com o MongoDB ---
 if (!MONGODB_URI) {
@@ -50,9 +50,8 @@ const Curso = mongoose.model('Curso', cursoSchema);
 // --- Middlewares Globais ---
 
 // Configuração CORS: Permite requisições apenas do seu domínio Vercel
-// SUBSTITUA 'https://seu-dominio-vercel.vercel.app' pelo URL REAL do seu frontend no Vercel
 app.use(cors({
-  origin: 'https://SEU_DOMINIO_VERCEL.vercel.app', // EX: 'https://meu-app-gerenciamento.vercel.app'
+  origin: 'https://trab1-humberto-31323-git-main-humbertos-projects-cfa953aa.vercel.app', // <<< URL DO SEU FRONTEND NO VERCEL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -72,6 +71,13 @@ function authenticateToken(req, res, next) {
     if (token == null) {
         console.log(`[AUTH] Acesso não autorizado à API ${req.originalUrl}. Token ausente.`);
         return res.status(401).json({ error: "Não autorizado. Token de autenticação ausente." });
+    }
+
+    // ATENÇÃO: JWT_SECRET deve ser uma variável de ambiente definida no Render.
+    // Se não estiver definida, esta verificação falhará.
+    if (!JWT_SECRET) {
+        console.error("Erro de configuração: JWT_SECRET não está definido no ambiente do servidor.");
+        return res.status(500).json({ error: "Erro interno do servidor: Chave secreta de autenticação não configurada." });
     }
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -94,6 +100,13 @@ app.post('/login', (req, res) => {
     if (login === 'admin' && password === 'admin') {
         // Se as credenciais estiverem corretas, gera um token JWT
         const user = { username: login }; // Dados que você quer incluir no token
+
+        // ATENÇÃO: JWT_SECRET deve ser uma variável de ambiente definida no Render.
+        if (!JWT_SECRET) {
+            console.error("Erro de configuração: JWT_SECRET não está definido no ambiente do servidor.");
+            return res.status(500).json({ error: "Erro interno do servidor: Chave secreta de autenticação não configurada." });
+        }
+
         const accessToken = jwt.sign(user, JWT_SECRET, { expiresIn: '1h' }); // Token expira em 1 hora
         console.log("Login bem-sucedido. Token gerado.");
         res.json({ message: "Login bem-sucedido", accessToken: accessToken });
