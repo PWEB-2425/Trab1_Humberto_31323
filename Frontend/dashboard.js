@@ -29,8 +29,7 @@ const messageDisplay = document.getElementById('messageDisplay');
 function showMessage(message, type = 'info') {
     if (messageDisplay) {
         messageDisplay.textContent = message;
-        // Adiciona classes para estilização (ex: .message.success, .message.error)
-        messageDisplay.className = `message ${type}`; 
+        messageDisplay.className = `message ${type}`; // Adiciona classes para estilização (ex: .message.success, .message.error)
         setTimeout(() => {
             messageDisplay.textContent = '';
             messageDisplay.className = 'message';
@@ -158,14 +157,24 @@ document.addEventListener('DOMContentLoaded', () => {
         searchCursoInput.addEventListener('input', searchCursos);
     }
 
-    // Lógica para destacar o item de menu ativo
-    // Esta lógica é independente do menu lateral e pode permanecer aqui.
+    // Lógica para o menu lateral (já existente e mantida)
+    const menuBtn = document.getElementById("menu-toggle");
+    const menu = document.getElementById("menu-lateral");
+    const body = document.body;
+
+    if (menuBtn && menu && body) {
+        menuBtn.addEventListener("click", () => {
+            menu.classList.toggle("open");
+            body.classList.toggle("menu-aberto");
+        });
+    }
+
+    // Lógica para destacar o item de menu ativo (já existente e mantida)
     const currentPath = window.location.pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.menu-lateral a');
 
     navLinks.forEach(link => {
         const linkHref = link.getAttribute('href');
-        // Verifica se o link corresponde ao caminho atual ou se é a página inicial
         if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
             link.classList.add('active');
         } else {
