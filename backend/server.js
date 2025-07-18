@@ -189,13 +189,13 @@ app.delete('/cursos/:id', async (req, res) => {
 
 // --- Servir Arquivos Estáticos (DEVE VIR DEPOIS DAS ROTAS DE API) ---
 // Isso permite que o Express sirva os arquivos HTML, CSS, JS do frontend.
-app.use(express.static(path.join(__dirname, '../frontend')));
+//app.use(express.static(path.join(__dirname, '../frontend')));
 
 // --- Rota para a raiz ('/') para servir o index.html (Menu Inicial) ---
 // Quando alguém acessa a URL base do seu backend, ele serve o index.html do frontend.
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
-});
+//app.get('/', (req, res) => {
+    //res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+//});
 
 // Iniciando o servidor
 app.listen(PORT, () => {
