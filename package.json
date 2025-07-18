@@ -1,7 +1,31 @@
 {
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.4"
-  }
+  },
+  "name": "trab1_humberto_31323",
+  "version": "1.0.0",
+  "description": "Trabalho1 de Programação Web",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PWEB-2425/Trab1_Humberto_31323.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PWEB-2425/Trab1_Humberto_31323/issues"
+  },
+  "homepage": "https://github.com/PWEB-2425/Trab1_Humberto_31323#readme"
 }
