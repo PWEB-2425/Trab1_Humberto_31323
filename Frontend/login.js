@@ -1,55 +1,50 @@
-// frontend/login.js
-
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('172.16.') || window.location.hostname.startsWith('10.')
-    ? "http://localhost:3000" // Se estiver em localhost ou IP local, usa o backend local
-    : "https://trab1-humberto-31323-58n5.onrender.com"; // URL do backend no Render
-
 document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("loginForm");          
+    const loginForm = document.getElementById("loginForm");
     const loginUsernameInput = document.getElementById("loginUsername");
     const loginPasswordInput = document.getElementById("loginPassword");
     const loginMessage = document.getElementById("loginMessage");
 
-    if (loginForm) {
-        loginForm.addEventListener("submit", async (event) => {
-            event.preventDefault(); // Impede o comportamento padrão de recarregar a página
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.')
+        ? "http://localhost:3000"
+        : "https://trab1-humberto-31323-58n5.onrender.com";
 
-            const username = loginUsernameInput.value;
-            const password = loginPasswordInput.value;
+    loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Impede o comportamento padrão de enviar o formulário
 
-            loginMessage.textContent = ""; // Limpa mensagens anteriores
+        // Captura os valores dos inputs
+        const login = loginUsernameInput.value;
+        const password = loginPasswordInput.value;
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/login`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ login: username, password: password }),
-                });
+        loginMessage.textContent = ""; // Limpa qualquer mensagem anterior
 
-                const data = await response.json();
+        try {
+            // Faz uma requisição POST para o backend para validar o login
+            const response = await fetch(`${API_BASE_URL}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ login, password }),
+            });
 
-                if (response.ok) {
-                    loginMessage.style.color = "green"; // Mensagem de sucesso em verde
-                    loginMessage.textContent = "Login bem-sucedido! Redirecionando...";
-                    console.log("Login bem-sucedido:", data.message);
+            const data = await response.json();
 
-                    setTimeout(() => {
-                        window.location.href = "dashboard.html"; // Redireciona após 1 segundo
-                    }, 1000);
-                } else {
-                    loginMessage.style.color = "red"; // Mensagem de erro em vermelho
-                    loginMessage.textContent = data.error || "Erro de login.";
-                    console.error("Erro de login:", data.error || response.statusText);
-                }
-            } catch (error) {
-                loginMessage.style.color = "red"; 
-                loginMessage.textContent = "Erro ao conectar ao servidor. Tente novamente.";
-                console.error("Erro na requisição de login:", error);
+            if (response.ok) {
+                loginMessage.style.color = "green";
+                loginMessage.textContent = data.message || "Login bem-sucedido! Redirecionando...";
+
+                // Redireciona para o menu inicial após um pequeno atraso
+                setTimeout(() => {
+                    window.location.href = "menuinicial.html"; // Redirecionamento para menu inicial
+                }, 1000); // Atraso de 1 segundo (1000ms)
+            } else {
+                loginMessage.style.color = "red";
+                loginMessage.textContent = data.error || "Erro de login!";
             }
-        });
-    } else {
-        console.error("Elemento 'loginForm' não encontrado.");
-    }
+        } catch (error) {
+            console.error("Erro ao fazer login:", error);
+            loginMessage.style.color = "red";
+            loginMessage.textContent = "Erro ao conectar ao servidor. Tente novamente.";
+        }
+    });
 });

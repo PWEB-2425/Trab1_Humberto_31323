@@ -1,137 +1,170 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Cursos</title> <!-- Título da página: "Lista de Cursos". -->
-    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones, se necessário. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <!-- Inclui a biblioteca Bootstrap CSS para estilos pré-definidos e responsividade. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
-    <!-- LINK PARA O SEU NOVO FICHEIRO CSS EXTERNO -->
-    <link rel="stylesheet" href="styles.css">
-</head>
-<!-- Adicione a classe 'has-sidebar' ao body para o layout com menu lateral -->
-<body class="has-sidebar">
-    <!-- Botão de menu (ícone de hambúrguer) - Copiado do index.html para ter o menu em todas as páginas -->
-    <div class="btn-menu" id="menu-toggle">
-        <i class="bi bi-list"></i>
-    </div>
+// frontend/listarcursos.js
 
-    <!-- Menu lateral de navegação - Copiado do index.html para ter o menu em todas as páginas -->
-    <nav class="menu-lateral" id="menu-lateral">
-        <h4 style="color: var(--cor-destaque-rosa); text-align: center; width: 100%; margin-bottom: 20px;">Navegação</h4>
-        <ul id="menu-items">
-            <li class="item-menu">
-                <a href="index.html" aria-label="Ir para o menu inicial">
-                    <span class="icon"><i class="bi bi-house"></i></span>
-                    <span class="txt-link">Menu Inicial</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="dashboard.html" aria-label="Ir para o dashboard">
-                    <span class="icon"><i class="bi bi-columns-gap"></i></span>
-                    <span class="txt-link">Dashboard</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="listaralunos.html" aria-label="Gerir Alunos">
-                    <span class="icon"><i class="bi bi-people"></i></span>
-                    <span class="txt-link">Alunos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="listarcursos.html" aria-label="Gerir Cursos" class="active"> <!-- Marcado como ativo -->
-                    <span class="icon"><i class="bi bi-book"></i></span>
-                    <span class="txt-link">Cursos</span>
-                </a>
-            </li>
-            <li class="item-menu">
-                <a href="login.html" aria-label="Sair"> <!-- Link para a página de login/logout. -->
-                    <span class="icon"><i class="bi bi-box-arrow-right"></i></span>
-                    <span class="txt-link">Sair</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('172.16.') || window.location.hostname.startsWith('10.')
+    ? "http://localhost:3000" // Se estiver em localhost ou IP local, usa o backend local
+    : "https://trab1-humberto-31323-58n5.onrender.com"; // URL da sua API no Render
 
-    <!-- Conteúdo principal da página -->
-    <main>
-        <div class="main-content-wrapper">
-            <h1 class="mt-4">Lista de Cursos</h1> <!-- Título principal da página. -->
+// --- Obtenção de referências para elementos DOM ---
+const tabelaCursosElement = document.getElementById("tabelaCursos");
+const tabelaCursosTbody = tabelaCursosElement ? tabelaCursosElement.getElementsByTagName("tbody")[0] : null;
+const messageDisplay = document.getElementById("messageDisplay"); // Um elemento para exibir mensagens ao usuário
 
-            <!-- Div para agrupar botões de ação (Adicionar, Deletar, Voltar). -->
-            <div class="d-flex flex-wrap justify-content-center mb-3">
-                <button id="btnAdicionarCurso" class="btn btn-success">Adicionar Novo Curso</button>
-                <button id="btnDeletarCurso" class="btn btn-danger">Deletar Curso</button>
-                <a href="dashboard.html" class="btn btn-secondary">Voltar ao Dashboard</a>
-            </div>
+// Validação inicial do tbody
+if (!tabelaCursosTbody) {
+    console.error("Erro CRÍTICO: Elemento tbody da tabela de cursos (id='tabelaCursos') não encontrado ou HTML malformado!");
+}
 
-            <!-- Formulário para adicionar um novo curso, inicialmente escondido. -->
-            <div id="formAdicionarCurso" class="form-container">
-                <h4>Formulário de Curso</h4>
-                <div class="mb-3">
-                    <label for="inputIdCurso" class="form-label">ID:</label>
-                    <input type="number" class="form-control" id="inputIdCurso">
-                </div>
-                <div class="mb-3">
-                    <label for="inputNomeCurso" class="form-label">Nome:</label>
-                    <input type="text" class="form-control" id="inputNomeCurso">
-                </div>
-                <div class="mb-3">
-                    <label for="inputSiglaCurso" class="form-label">Sigla:</label>
-                    <input type="text" class="form-control" id="inputSiglaCurso">
-                </div>
-                <!-- Div para os botões de ação do formulário (Salvar, Cancelar). -->
-                <div class="d-flex justify-content-end mt-4">
-                    <button id="btnAdicionarCursoForm" class="btn btn-primary me-2">Salvar Curso</button>
-                    <button id="btnCancelarCurso" class="btn btn-secondary">Cancelar</button>
-                </div>
-            </div>
+// Referências aos botões e formulário.
+const btnAdicionarCurso = document.getElementById("btnAdicionarCurso");
+const btnDeletarCurso = document.getElementById("btnDeletarCurso");
+const formAdicionarCurso = document.getElementById("formAdicionarCurso");
+const btnAdicionarCursoForm = document.getElementById("btnAdicionarCursoForm");
+const btnCancelarCurso = document.getElementById("btnCancelarCurso");
 
-            <!-- Tabela para exibir a lista de cursos. -->
-            <table class="table" id="tabelaCursos"> <!-- Removi 'table-striped' pois o styles.css já trata isso -->
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Sigla</th>
-                        <th>Ações</th> <!-- Adicionei coluna para botões de ação -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Os dados dos cursos serão inseridos aqui dinamicamente pelo JavaScript. -->
-                </tbody>
-            </table>
-        </div>
-    </main>
+// Referências aos campos de input do formulário de adição.
+const inputIdCurso = document.getElementById("inputIdCurso");
+const inputNomeCurso = document.getElementById("inputNomeCurso");
+const inputSiglaCurso = document.getElementById("inputSiglaCurso");
 
-    <!-- Script JavaScript para a lógica de interatividade da página de cursos. -->
-    <script src="listarcursos.js"></script>
-    <!-- Script para a interatividade do menu lateral (copiado do index.html) -->
-    <script>
-        const menuBtn = document.getElementById("menu-toggle");
-        const menu = document.getElementById("menu-lateral");
-        const body = document.body;
+/**
+ * Função auxiliar para exibir mensagens ao usuário na interface.
+ * @param {string} message - A mensagem a ser exibida.
+ * @param {'success' | 'error' | 'info'} type - O tipo da mensagem para estilização.
+ */
+function showMessage(message, type = 'info') {
+    if (messageDisplay) {
+        messageDisplay.textContent = message;
+        messageDisplay.className = `message ${type}`; // Adiciona classes para estilização (ex: .message.success, .message.error)
+        setTimeout(() => {
+            messageDisplay.textContent = '';
+            messageDisplay.className = 'message';
+        }, 5000);
+    } else {
+        console.log(`[MESSAGE - ${type.toUpperCase()}] ${message}`);
+    }
+}
 
-        menuBtn.addEventListener("click", () => {
-            menu.classList.toggle("open");
-            body.classList.toggle("menu-aberto");
+/**
+ * Função auxiliar para fazer requisições autenticadas.
+ * Obtém o token do localStorage e o adiciona ao cabeçalho Authorization.
+ * @param {string} url - O URL da API.
+ * @param {string} method - O método HTTP (POST, PUT, DELETE).
+ * @param {object} [body=null] - O corpo da requisição (para POST/PUT).
+ * @returns {Promise<object>} - A resposta JSON da API.
+ * @throws {Error} - Lança um erro se a requisição falhar ou o token for inválido.
+ */
+async function fetchAuthenticated(url, method, body = null) {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        showMessage("Não autorizado. Faça login novamente.", 'error');
+        console.error('Token de autenticação não encontrado. Redirecionando para o login.');
+        window.location.href = 'index.html'; // Ou login.html
+        throw new Error("Token de autenticação ausente.");
+    }
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: headers,
+            body: body ? JSON.stringify(body) : null
         });
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const currentPath = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('.menu-lateral a'); // Seleciona todos os links 'a' dentro do menu
+        if (response.status === 401 || response.status === 403) {
+            showMessage("Sessão expirada ou não autorizada. Faça login novamente.", 'error');
+            console.error('Token inválido ou expirado. Faça login novamente.');
+            localStorage.removeItem('accessToken'); // Limpa o token inválido
+            window.location.href = 'index.html'; // Redireciona para o login
+            throw new Error("Não autorizado ou token inválido.");
+        }
 
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href');
-                if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro HTTP: ${response.status} ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erro na requisição autenticada:', error);
+        throw error;
+    }
+}
+
+/**
+ * Função assíncrona para carregar e exibir a lista de cursos na tabela.
+ */
+async function carregarCursos() {
+    console.log("--- carregarCursos() iniciada ---");
+    if (!tabelaCursosTbody) {
+        console.error("Erro: `tabelaCursosTbody` é null. Impossível carregar cursos na tabela.");
+        return;
+    }
+    tabelaCursosTbody.innerHTML = '';
+
+    try {
+        console.log(`[FETCH CURSOS] Tentando buscar dados de: ${API_BASE_URL}/cursos`);
+        const resposta = await fetch(`${API_BASE_URL}/cursos`);
+
+        if (!resposta.ok) {
+            const erroDetalhes = await resposta.text();
+            console.error(`[FETCH CURSOS ERROR] Erro HTTP! Status: ${resposta.status} (${resposta.statusText})`, erroDetalhes);
+            showMessage(`Erro ao carregar cursos: ${resposta.status} - ${resposta.statusText}.`, 'error');
+            return;
+        }
+
+        const cursos = await resposta.json();
+        console.log("[FETCH CURSOS] Dados de cursos recebidos (array JSON):", cursos);
+
+        if (!Array.isArray(cursos)) {
+            console.error("[DATA CURSOS ERROR] A resposta da API não é um array:", cursos);
+            showMessage("Erro: Dados de cursos recebidos da API não estão no formato esperado (array).", 'error');
+            return;
+        }
+
+        if (cursos.length === 0) {
+            showMessage("Nenhum curso cadastrado.", 'info');
+            const novaLinha = tabelaCursosTbody.insertRow();
+            const celulaMensagem = novaLinha.insertCell(0);
+            celulaMensagem.colSpan = 4;
+            celulaMensagem.textContent = "Nenhum curso cadastrado.";
+            celulaMensagem.style.textAlign = "center";
+            return;
+        }
+
+        console.log(`[INFO CURSOS] Preenchendo tabela com ${cursos.length} cursos.`);
+        cursos.forEach(curso => {
+            const novaLinha = tabelaCursosTbody.insertRow();
+            novaLinha.insertCell(0).textContent = curso.id;
+            novaLinha.insertCell(1).textContent = curso.Nome;
+            novaLinha.insertCell(2).textContent = curso.Sigla;
+            console.log("   [RENDER CURSOS] Adicionado curso:", curso.Nome);
         });
-    </script>
-</body>
-</html>
+        console.log("--- carregarCursos() finalizada com sucesso ---");
+    } catch (error) {
+        console.error("[CATCH CURSOS ERROR] Erro no processo de carregarCursos:", error);
+        showMessage("Erro inesperado ao carregar cursos. Verifique o console do navegador.", 'error');
+    }
+}
+
+/**
+ * Função assíncrona para adicionar um novo curso.
+ */
+async function adicionarCurso() {
+    const id = parseInt(inputIdCurso.value, 10);
+    const nome = inputNomeCurso.value.trim();
+    const sigla = inputSiglaCurso.value.trim();
+
+    if (isNaN(id) || !nome || !sigla) {
+        showMessage("Por favor, preencha todos os campos corretamente.", 'error');
+        return;
+    }
+
+    const novoCurso = { id, Nome: nome, Sigla: sigla };
+
+    try {
+        console.log("[ADD CURSO] Tentando adicionar curso:", novoCurso);
+        const data = await fetchAuthenticated(`${API_BASE_URL}/cursos`, "POST", novo
