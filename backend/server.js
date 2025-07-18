@@ -2,7 +2,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+const path = require('path'); // Mantém para o bdPath, mas não para servir frontend
 const fs = require('fs').promises; // Mantém para operações de escrita/leitura em JSON se ainda desejar um "dual-write" para fins de mock local, mas a leitura para o frontend virá do MongoDB.
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken'); // Importa jsonwebtoken
@@ -52,8 +52,8 @@ const Curso = mongoose.model('Curso', cursoSchema);
 // Configuração CORS: Permite requisições do seu domínio Vercel e localhost para desenvolvimento
 app.use(cors({
   origin: [
-      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // <<< AQUI!
-      'http://localhost:3000'
+      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // <<< SEU MAIS RECENTE URL DO VERCEL
+      'http://localhost:3000' // Para desenvolvimento local
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
@@ -148,7 +148,7 @@ app.get('/alunos', async (req, res) => {
 app.post('/alunos', authenticateToken, async (req, res) => {
     try {
         // Tenta escrever no JSON (comportamento de "dual-write" mantido, mas opcional)
-        // Lembre-se que em Render, o JSON será efímero.
+        // Lembre-se que em Render, o JSON será efêmero.
         try {
             const data = await fs.readFile(bdPath, 'utf8');
             const jsonData = JSON.parse(data);
@@ -419,19 +419,17 @@ app.delete('/cursos/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// --- Servir arquivos estáticos do frontend (para desenvolvimento local) ---
-// Esta linha deve vir ANTES do middleware de 404!
-app.use(express.static(path.join(__dirname, '..', 'frontend')));
-
-// --- Rota para a página inicial (redireciona para login.html) ---
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'frontend', 'login.html'));
-});
+// --- Servir arquivos estáticos do frontend (APENAS PARA DESENVOLVIMENTO LOCAL) ---
+// Esta seção deve ser REMOVIDA ou COMENTADA para deploy no Render/produção!
+// app.use(express.static(path.join(__dirname, '..', 'frontend')));
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, '..', 'frontend', 'login.html'));
+// });
 
 // --- Middleware para lidar com 404 (Not Found) ---
-// Este middleware só será acionado se nenhuma rota da API ou arquivo estático for correspondido
+// Este middleware só será acionado se nenhuma rota da API for correspondida
 app.use((req, res, next) => {
-    console.log(`[404 NOT FOUND] Recurso da API ou arquivo estático não encontrado: ${req.originalUrl}`);
+    console.log(`[404 NOT FOUND] Recurso da API não encontrado: ${req.originalUrl}`);
     res.status(404).json({ error: 'Recurso da API não encontrado.' });
 });
 
