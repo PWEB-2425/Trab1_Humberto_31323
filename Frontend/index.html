@@ -4,71 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu Inicial - Trabalho1_PW</title>
-    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones (ex: hambúrguer, casa). -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
-    <!-- Inclui a biblioteca Bootstrap CSS para estilos básicos e responsividade. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
-    <!-- LINK PARA O SEU NOVO FICHEIRO CSS EXTERNO -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<!-- Adicione a classe 'has-sidebar' ao body para o layout com menu lateral -->
 <body class="has-sidebar">
 
-    <!-- Botão de menu (ícone de hambúrguer) -->
     <div class="btn-menu" id="menu-toggle">
-        <i class="bi bi-list"></i> <!-- Ícone de lista/hambúrguer do Bootstrap Icons. -->
+        <i class="bi bi-list"></i>
     </div>
 
-    <!-- Menu lateral de navegação -->
     <nav class="menu-lateral" id="menu-lateral">
-        <!-- Título ou logo do menu lateral. -->
         <h4 style="color: var(--cor-destaque-rosa); text-align: center; width: 100%; margin-bottom: 20px;">Navegação</h4>
         <ul id="menu-items">
-            <!-- Item de menu: Menu Inicial -->
             <li class="item-menu">
-                <!-- Link para a página inicial, marcado como ativo. -->
                 <a href="index.html" aria-label="Ir para o menu inicial" class="active">
-                    <span class="icon"><i class="bi bi-house"></i></span> <!-- Ícone de casa. -->
+                    <span class="icon"><i class="bi bi-house"></i></span>
                     <span class="txt-link">Menu Inicial</span>
                 </a>
             </li>
-            <!-- Item de menu: Dashboard -->
             <li class="item-menu">
                 <a href="dashboard.html" aria-label="Ir para o dashboard">
-                    <span class="icon"><i class="bi bi-columns-gap"></i></span> <!-- Ícone de dashboard. -->
+                    <span class="icon"><i class="bi bi-columns-gap"></i></span>
                     <span class="txt-link">Dashboard</span>
                 </a>
             </li>
-            <!-- Item de menu: Alunos -->
             <li class="item-menu">
                 <a href="listaralunos.html" aria-label="Gerir Alunos">
-                    <span class="icon"><i class="bi bi-people"></i></span> <!-- Ícone de pessoas. -->
+                    <span class="icon"><i class="bi bi-people"></i></span>
                     <span class="txt-link">Alunos</span>
                 </a>
             </li>
-            <!-- Item de menu: Cursos -->
             <li class="item-menu">
                 <a href="listarcursos.html" aria-label="Gerir Cursos">
-                    <span class="icon"><i class="bi bi-book"></i></span> <!-- Ícone de livro. -->
+                    <span class="icon"><i class="bi bi-book"></i></span>
                     <span class="txt-link">Cursos</span>
                 </a>
             </li>
-            <!-- Item de menu: Sair (Não é mais um logout real, mas um link para a raiz se necessário) -->
             <li class="item-menu">
-                <a href="index.html" aria-label="Sair"> <!-- Redireciona para a própria página inicial -->
-                    <span class="icon"><i class="bi bi-box-arrow-right"></i></span> <!-- Ícone de sair. -->
+                <a href="index.html" aria-label="Sair">
+                    <span class="icon"><i class="bi bi-box-arrow-right"></i></span>
                     <span class="txt-link">Sair</span>
                 </a>
             </li>
         </ul>
     </nav>
 
-    <!-- Conteúdo principal da página -->
     <main>
         <div class="main-content-wrapper">
             <h1>Menu Inicial</h1>
             <p class="text-center">Bem-vindo ao Menu Inicial do Trabalho1_PW!</p>
-            <!-- Marquee (texto rolante) para uma mensagem dinâmica. -->
             <marquee behavior="scroll" direction="left" scrollamount="10">
                 <h2>Explore as opções no menu lateral.</h2>
             </marquee>
@@ -76,7 +61,6 @@
         </div>
     </main>
 
-    <!-- Script JavaScript para a interatividade do menu lateral. -->
     <script src="menu.js"></script>
 </body>
 </html>

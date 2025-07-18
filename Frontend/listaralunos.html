@@ -4,20 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Alunos</title>
-    <!-- Bootstrap Icons para ícones -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <!-- Bootstrap CSS para estilos básicos e responsividade -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
-    <!-- Seu CSS personalizado -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="has-sidebar">
-    <!-- Botão para alternar o menu lateral -->
     <div class="btn-menu" id="menu-toggle">
         <i class="bi bi-list"></i>
     </div>
 
-    <!-- Menu lateral de navegação -->
     <nav class="menu-lateral" id="menu-lateral">
         <h4 style="color: var(--cor-destaque-rosa); text-align: center; width: 100%; margin-bottom: 20px;">Navegação</h4>
         <ul id="menu-items">
@@ -54,22 +49,17 @@
         </ul>
     </nav>
 
-    <!-- Conteúdo principal da página -->
     <main>
         <div class="main-content-wrapper">
             <h1>Lista de Alunos</h1>
-            <!-- Parágrafo para exibir mensagens ao usuário (sucesso, erro, info) -->
             <p id="messageDisplay" class="text-center mt-3"></p>
 
-            <!-- Botões de ação principais -->
             <div class="d-flex flex-wrap justify-content-center mb-3">
                 <button id="btnAdicionarAluno" class="btn btn-success me-2">Adicionar Novo Aluno</button>
                 <button id="btnDeletarAluno" class="btn btn-danger me-2">Deletar Aluno</button>
                 <a href="dashboard.html" class="btn btn-secondary">Voltar ao Dashboard</a>
             </div>
 
-            <!-- Formulário de Adicionar/Editar Aluno -->
-            <!-- Inicialmente oculto, será exibido pelo JavaScript -->
             <div id="formAdicionarAluno" class="form-container mb-5 p-4 bg-light rounded shadow-sm" style="display: none;">
                 <h4 id="formAlunoTitle">Formulário de Aluno</h4>
                 <form>
@@ -100,7 +90,6 @@
                 </form>
             </div>
 
-            <!-- Tabela para exibir os dados dos alunos -->
             <table class="table" id="tabelaAlunos">
                 <thead>
                     <tr>
@@ -109,19 +98,16 @@
                         <th>Apelido</th>
                         <th>Curso</th>
                         <th>Ano Curricular</th>
-                        <th>Ações</th> <!-- Coluna para botões de Editar/Deletar -->
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Os dados dos alunos serão inseridos aqui dinamicamente pelo JavaScript. -->
                 </tbody>
             </table>
         </div>
     </main>
 
-    <!-- Script JavaScript para a lógica da página de alunos -->
     <script src="listaraluno.js"></script>
-    <!-- Script para a interatividade do menu lateral -->
     <script src="menu.js"></script>
 </body>
 </html>

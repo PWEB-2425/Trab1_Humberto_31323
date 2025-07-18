@@ -7,11 +7,16 @@ require('dotenv').config(); // Carrega .env
 const app = express();
 
 // --- CORS Configurado ---
+// Permite requisições das seguintes origens:
+// - localhost:3000 (para desenvolvimento local do frontend e backend)
+// - A URL do seu frontend no Vercel (incluindo a branch 'git-main-humbertos-projects-cfa953aa')
+// - A URL do seu backend no Render (para comunicação interna, se aplicável, ou testes diretos)
 app.use(cors({
     origin: [
-        'http://localhost:3000', // Para desenvolvimento local
-        'https://trab1-humberto-31323-final.vercel.app', // URL do seu frontend Vercel
-        'https://trab1-humberto-31323-58n5.onrender.com' // URL do seu backend no Render
+        'http://localhost:3000',
+        'https://trab1-humberto-31323-final.vercel.app', // Sua URL principal do Vercel
+        'https://trab1-humberto-31323-final-git-main-humbertos-projects-cfa953aa.vercel.app', // Sua URL de branch do Vercel
+        'https://trab1-humberto-31323-58n5.onrender.com' // Sua URL do backend no Render
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
@@ -43,22 +48,23 @@ mongoose.connect(MONGODB_URI, {
 app.use(express.json());
 
 // --- Content Security Policy (CSP) Header seguro ---
-// Esta política permite os recursos necessários e evita o erro 'Refused to execute inline script'.
+// Esta política é mais abrangente para permitir todos os recursos necessários e evitar erros CSP.
 // 'self': Permite recursos da mesma origem (seu domínio).
-// 'unsafe-inline': Necessário para estilos inline (se houver) e para permitir que o navegador execute scripts de extensões (embora não seja o ideal para produção, é um bom ponto de partida).
-// https://cdn.jsdelivr.net: Permite scripts e estilos do CDN do Bootstrap Icons/CSS.
-// data:: Permite imagens codificadas em base64.
-// http://localhost:3000: Permite o favicon local durante o desenvolvimento.
-// connect-src: Permite requisições de dados para o backend local e o backend no Render.
+// 'unsafe-inline': Necessário para estilos inline (se houver) e para permitir que o navegador execute scripts de extensões.
+//                 Idealmente, remova todos os scripts/estilos inline para maior segurança.
+// https://cdn.jsdelivr.net: Permite scripts e estilos de CDNs comuns (Bootstrap Icons, Bootstrap CSS).
+// data:: Permite imagens codificadas em base64 (favicons, etc.).
+// http://localhost:3000: Permite recursos do localhost durante o desenvolvimento.
+// connect-src: Permite requisições de dados para o backend local e as URLs de deploy.
 app.use((req, res, next) => {
     res.setHeader(
         "Content-Security-Policy",
         "default-src 'self'; " +
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
-        "img-src 'self' data: http://localhost:3000 https://trab1-humberto-31323-final.vercel.app; " + // Adicionado Vercel para imagens
+        "img-src 'self' data: http://localhost:3000 https://trab1-humberto-31323-final.vercel.app https://trab1-humberto-31323-final-git-main-humbertos-projects-cfa953aa.vercel.app; " + // Adicionado Vercel URLs para imagens
         "font-src 'self' https://cdn.jsdelivr.net; " +
-        "connect-src 'self' http://localhost:3000 https://trab1-humberto-31323-58n5.onrender.com https://trab1-humberto-31323-final.vercel.app; " + // Adicionado Vercel para connect-src
+        "connect-src 'self' http://localhost:3000 https://trab1-humberto-31323-58n5.onrender.com https://trab1-humberto-31323-final.vercel.app https://trab1-humberto-31323-final-git-main-humbertos-projects-cfa953aa.vercel.app; " + // Adicionado Vercel URLs para connect-src
         "object-src 'none'; " +
         "frame-src 'none';"
     );
@@ -89,7 +95,7 @@ app.get('/alunos', async (req, res) => {
         const alunos = await Aluno.find({});
         res.json(alunos);
     } catch (err) {
-        console.error('Erro ao buscar alunos:', err); // Adicionado log para depuração
+        console.error('Erro ao buscar alunos:', err);
         res.status(500).json({ error: 'Erro ao buscar alunos' });
     }
 });
@@ -100,34 +106,38 @@ app.post('/alunos', async (req, res) => {
         await novoAluno.save();
         res.status(201).json({ message: 'Aluno adicionado com sucesso!' });
     } catch (err) {
-        console.error('Erro ao adicionar aluno:', err); // Adicionado log para depuração
+        console.error('Erro ao adicionar aluno:', err);
         res.status(500).json({ error: 'Erro ao adicionar aluno' });
     }
 });
 
 app.put('/alunos/:id', async (req, res) => {
+    const alunoId = parseInt(req.params.id, 10);
+    const updatedData = req.body;
     try {
-        const aluno = await Aluno.findOneAndUpdate(
-            { id: parseInt(req.params.id) },
-            req.body,
-            { new: true, runValidators: true }
-        );
-        aluno ? res.json({ message: 'Aluno atualizado com sucesso!', aluno }) :
-                res.status(404).json({ error: 'Aluno não encontrado' });
+        const result = await Aluno.findOneAndUpdate({ id: alunoId }, updatedData, { new: true, runValidators: true });
+        if (result) {
+            res.status(200).json({ message: 'Aluno atualizado com sucesso!', aluno: result });
+        } else {
+            res.status(404).json({ error: 'Aluno não encontrado' });
+        }
     } catch (err) {
-        console.error('Erro ao atualizar aluno:', err); // Adicionado log para depuração
+        console.error('Erro ao atualizar aluno:', err);
         res.status(500).json({ error: 'Erro ao atualizar aluno' });
     }
 });
 
 app.delete('/alunos/:id', async (req, res) => {
+    const alunoId = parseInt(req.params.id, 10);
     try {
-        const result = await Aluno.deleteOne({ id: parseInt(req.params.id) });
-        result.deletedCount ?
-            res.json({ message: 'Aluno deletado com sucesso!' }) :
+        const result = await Aluno.deleteOne({ id: alunoId });
+        if (result.deletedCount > 0) {
+            res.status(200).json({ message: 'Aluno deletado com sucesso!' });
+        } else {
             res.status(404).json({ error: 'Aluno não encontrado' });
+        }
     } catch (err) {
-        console.error('Erro ao deletar aluno:', err); // Adicionado log para depuração
+        console.error('Erro ao deletar aluno:', err);
         res.status(500).json({ error: 'Erro ao deletar aluno' });
     }
 });
@@ -138,7 +148,7 @@ app.get('/cursos', async (req, res) => {
         const cursos = await Curso.find({});
         res.json(cursos);
     } catch (err) {
-        console.error('Erro ao buscar cursos:', err); // Adicionado log para depuração
+        console.error('Erro ao buscar cursos:', err);
         res.status(500).json({ error: 'Erro ao buscar cursos' });
     }
 });
@@ -149,51 +159,54 @@ app.post('/cursos', async (req, res) => {
         await novoCurso.save();
         res.status(201).json({ message: 'Curso adicionado com sucesso!' });
     } catch (err) {
-        console.error('Erro ao adicionar curso:', err); // Adicionado log para depuração
+        console.error('Erro ao adicionar curso:', err);
         res.status(500).json({ error: 'Erro ao adicionar curso' });
     }
 });
 
 app.put('/cursos/:id', async (req, res) => {
+    const cursoId = parseInt(req.params.id, 10);
+    const updatedData = req.body;
     try {
-        const curso = await Curso.findOneAndUpdate(
-            { id: parseInt(req.params.id) },
-            req.body,
-            { new: true, runValidators: true }
-        );
-        curso ? res.json({ message: 'Curso atualizado com sucesso!', curso }) :
-                res.status(404).json({ error: 'Curso não encontrado' });
+        const result = await Curso.findOneAndUpdate({ id: cursoId }, updatedData, { new: true, runValidators: true });
+        if (result) {
+            res.status(200).json({ message: 'Curso atualizado com sucesso!', curso: result });
+        } else {
+            res.status(404).json({ error: 'Curso não encontrado' });
+        }
     } catch (err) {
-        console.error('Erro ao atualizar curso:', err); // Adicionado log para depuração
+        console.error('Erro ao atualizar curso:', err);
         res.status(500).json({ error: 'Erro ao atualizar curso' });
     }
 });
 
 app.delete('/cursos/:id', async (req, res) => {
+    const cursoId = parseInt(req.params.id, 10);
     try {
-        const result = await Curso.deleteOne({ id: parseInt(req.params.id) });
-        result.deletedCount ?
-            res.json({ message: 'Curso deletado com sucesso!' }) :
+        const result = await Curso.deleteOne({ id: cursoId });
+        if (result.deletedCount > 0) {
+            res.status(200).json({ message: 'Curso deletado com sucesso!' });
+        } else {
             res.status(404).json({ error: 'Curso não encontrado' });
+        }
     } catch (err) {
-        console.error('Erro ao deletar curso:', err); // Adicionado log para depuração
+        console.error('Erro ao deletar curso:', err);
         res.status(500).json({ error: 'Erro ao deletar curso' });
     }
 });
 
 // --- ATENÇÃO: APENAS PARA DESENVOLVIMENTO LOCAL ---
 // Estas linhas servem os arquivos estáticos do frontend e a rota raiz.
-// REMOVA OU COMENTE ESTES BLOCOS ANTES DE FAZER O DEPLOY DO BACKEND NO RENDER!
+// ELAS DEVEM ESTAR COMENTADAS OU REMOVIDAS AO FAZER O DEPLOY DO BACKEND NO RENDER!
 // O Vercel será responsável por servir o frontend em produção.
-app.use(express.static(path.join(__dirname, '../frontend')));
+// app.use(express.static(path.join(__dirname, '../frontend')));
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
-});
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+// });
 // --- FIM DO BLOCO DE DESENVOLVIMENTO LOCAL ---
 
 // Iniciar servidor
 app.listen(PORT, () => {
-    // Log de inicialização do servidor
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
