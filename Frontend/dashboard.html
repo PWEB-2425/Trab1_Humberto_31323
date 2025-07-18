@@ -1,130 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - Trabalho1_PW</title>
+    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones (ex: hambúrguer, casa). -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <!-- Inclui a biblioteca Bootstrap CSS para estilos básicos e responsividade. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css"> <!-- Link para o CSS externo -->
+    <!-- LINK PARA O SEU NOVO FICHEIRO CSS EXTERNO -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="has-sidebar"> <!-- Adicione a classe 'has-sidebar' -->
+<!-- Adicione a classe 'has-sidebar' ao body para o layout com menu lateral -->
+<body class="has-sidebar">
 
-    <!-- Botão de menu -->
+    <!-- Botão de menu (ícone de hambúrguer) -->
     <div class="btn-menu" id="menu-toggle">
-        <i class="bi bi-list"></i>
+        <i class="bi bi-list"></i> <!-- Ícone de lista/hambúrguer do Bootstrap Icons. -->
     </div>
 
     <!-- Menu lateral de navegação -->
     <nav class="menu-lateral" id="menu-lateral">
+        <!-- Título ou logo do menu lateral. -->
         <h4 style="color: var(--cor-destaque-rosa); text-align: center; width: 100%; margin-bottom: 20px;">Navegação</h4>
         <ul id="menu-items">
+            <!-- Item de menu: Menu Inicial -->
             <li class="item-menu">
+                <!-- Link para a página inicial. -->
                 <a href="index.html" aria-label="Ir para o menu inicial">
-                    <span class="icon"><i class="bi bi-house"></i></span>
+                    <span class="icon"><i class="bi bi-house"></i></span> <!-- Ícone de casa. -->
                     <span class="txt-link">Menu Inicial</span>
                 </a>
             </li>
+            <!-- Item de menu: Dashboard -->
             <li class="item-menu">
-                <a href="dashboard.html" aria-label="Ir para o dashboard" class="active"> <!-- Marcado como ativo -->
-                    <span class="icon"><i class="bi bi-columns-gap"></i></span>
+                <a href="dashboard.html" aria-label="Ir para o dashboard" class="active">
+                    <span class="icon"><i class="bi bi-columns-gap"></i></span> <!-- Ícone de dashboard. -->
                     <span class="txt-link">Dashboard</span>
                 </a>
             </li>
+            <!-- Item de menu: Alunos -->
             <li class="item-menu">
                 <a href="listaralunos.html" aria-label="Gerir Alunos">
-                    <span class="icon"><i class="bi bi-people"></i></span>
+                    <span class="icon"><i class="bi bi-people"></i></span> <!-- Ícone de pessoas. -->
                     <span class="txt-link">Alunos</span>
                 </a>
             </li>
+            <!-- Item de menu: Cursos -->
             <li class="item-menu">
                 <a href="listarcursos.html" aria-label="Gerir Cursos">
-                    <span class="icon"><i class="bi bi-book"></i></span>
+                    <span class="icon"><i class="bi bi-book"></i></span> <!-- Ícone de livro. -->
                     <span class="txt-link">Cursos</span>
                 </a>
             </li>
+            <!-- Item de menu: Sair -->
             <li class="item-menu">
-                <a href="index.html" aria-label="Sair"> <!-- Redireciona para a página inicial -->
-                    <span class="icon"><i class="bi bi-box-arrow-right"></i></span>
+                <a href="index.html" aria-label="Sair">
+                    <span class="icon"><i class="bi bi-box-arrow-right"></i></span> <!-- Ícone de sair. -->
                     <span class="txt-link">Sair</span>
                 </a>
             </li>
         </ul>
     </nav>
 
+    <!-- Conteúdo principal da página -->
     <main>
         <div class="main-content-wrapper">
             <h1>Dashboard</h1>
-            <p class="text-center">Bem-vindo ao seu Dashboard!</p>
-            <marquee behavior="scroll" direction="left" scrollamount="10">
-                <h2>Aqui você pode gerir alunos e cursos.</h2>
-            </marquee>
-            <p class="text-center mt-4">Use o menu lateral para navegar entre as seções.</p>
+            <p class="text-center">Bem-vindo ao seu Dashboard! Use o menu lateral para navegar.</p>
 
-            <!-- Div para exibir mensagens (necessário para showMessage) -->
-            <p id="messageDisplay" class="text-center mt-3"></p>
-
-            <!-- BOTÕES MAIS LARGOS AQUI -->
-            <div class="d-grid gap-2 mt-4 mb-5 mx-auto" style="max-width: 400px;"> <!-- max-width aumentado para 400px -->
-                <a href="listaralunos.html" class="btn btn-primary btn-lg">Ver Alunos</a>
-                <a href="listarcursos.html" class="btn btn-primary btn-lg">Ver Cursos</a>
+            <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card text-center bg-dark text-white rounded-lg shadow-lg">
+                        <div class="card-body">
+                            <i class="bi bi-people text-pink-500 display-4 mb-3"></i>
+                            <h5 class="card-title text-pink-500">Gestão de Alunos</h5>
+                            <p class="card-text text-gray-400">Visualize, adicione, edite e remova registos de alunos.</p>
+                            <a href="listaralunos.html" class="btn btn-primary mt-3">Ir para Alunos</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card text-center bg-dark text-white rounded-lg shadow-lg">
+                        <div class="card-body">
+                            <i class="bi bi-book text-pink-500 display-4 mb-3"></i>
+                            <h5 class="card-title text-pink-500">Gestão de Cursos</h5>
+                            <p class="card-text text-gray-400">Visualize, adicione, edite e remova registos de cursos.</p>
+                            <a href="listarcursos.html" class="btn btn-primary mt-3">Ir para Cursos</a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Seção de Pesquisa de Alunos -->
-            <div class="mt-5 p-4 bg-dark rounded-lg shadow-md">
-                <h2 class="text-center text-pink-500 mb-4">Pesquisar Alunos</h2>
-                <div class="mb-3">
-                    <label for="searchAlunoInput" class="form-label">Pesquisar por Nome, Apelido ou ID:</label>
-                    <input type="text" class="form-control" id="searchAlunoInput" placeholder="Digite para pesquisar alunos...">
+            <div class="mt-5 text-center">
+                <h2>Pesquisar Alunos e Cursos</h2>
+                <div class="input-group mb-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar por ID, Nome, Curso, etc...">
+                    <button class="btn btn-primary" id="searchButton">Pesquisar</button>
                 </div>
-                <div id="alunosSearchResults" class="list-group mt-3">
-                    <!-- Resultados da pesquisa de alunos serão inseridos aqui -->
+                <div id="searchResults" class="list-group mt-3">
+                    <!-- Resultados da pesquisa serão exibidos aqui -->
                 </div>
-                <p id="noAlunoResults" class="text-center text-gray-400 mt-3" style="display: none;">Nenhum aluno encontrado.</p>
             </div>
-
-            <!-- Seção de Pesquisa de Cursos -->
-            <div class="mt-5 p-4 bg-dark rounded-lg shadow-md">
-                <h2 class="text-center text-pink-500 mb-4">Pesquisar Cursos</h2>
-                <div class="mb-3">
-                    <label for="searchCursoInput" class="form-label">Pesquisar por Nome, Sigla ou ID:</label>
-                    <input type="text" class="form-control" id="searchCursoInput" placeholder="Digite para pesquisar cursos...">
-                </div>
-                <div id="cursosSearchResults" class="list-group mt-3">
-                    <!-- Resultados da pesquisa de cursos serão inseridos aqui -->
-                </div>
-                <p id="noCursoResults" class="text-center text-gray-400 mt-3" style="display: none;">Nenhum curso encontrado.</p>
-            </div>
-
         </div>
     </main>
 
     <!-- Script para a interatividade do menu lateral -->
-    <script>
-        const menuBtn = document.getElementById("menu-toggle");
-        const menu = document.getElementById("menu-lateral");
-        const body = document.body;
-
-        menuBtn.addEventListener("click", () => {
-            menu.classList.toggle("open");
-            body.classList.toggle("menu-aberto");
-        });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const currentPath = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('.menu-lateral a');
-
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href');
-                if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        });
-    </script>
-    <!-- Script específico do dashboard -->
+    <script src="menu.js"></script>
+    <!-- Script para a lógica do dashboard e pesquisa -->
     <script src="dashboard.js"></script>
 </body>
 </html>

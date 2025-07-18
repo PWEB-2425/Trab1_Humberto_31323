@@ -77,37 +77,6 @@
     </main>
 
     <!-- Script JavaScript para a interatividade do menu lateral. -->
-    <script>
-        const menuBtn = document.getElementById("menu-toggle"); // Botão de alternar o menu.
-        const menu = document.getElementById("menu-lateral");    // O elemento do menu lateral.
-        const body = document.body;                              // O elemento <body> da página.
-
-        // Adiciona um event listener ao botão de menu.
-        // Ao clicar, ele alterna as classes CSS para abrir/fechar o menu e ajustar o layout do corpo.
-        menuBtn.addEventListener("click", () => {
-            menu.classList.toggle("open"); // Adiciona/remove a classe 'open' no menu lateral.
-            body.classList.toggle("menu-aberto"); // Adiciona/remove a classe 'menu-aberto' no body.
-        });
-
-        // Lógica para destacar o item de menu ativo (opcional, para indicar a página atual).
-        document.addEventListener("DOMContentLoaded", () => {
-            // Obtém o nome do arquivo HTML atual da URL (ex: "index.html", "dashboard.html").
-            const currentPath = window.location.pathname.split('/').pop();
-            // Seleciona todos os links de navegação dentro do menu lateral.
-            const navLinks = document.querySelectorAll('.menu-lateral a');
-
-            // Itera sobre cada link de navegação.
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href'); // Obtém o valor do atributo 'href' do link.
-                // Verifica se o 'href' do link corresponde ao caminho atual da página.
-                // Também lida com o caso em que a página inicial pode ser referenciada por 'index.html' ou por uma string vazia.
-                if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
-                    link.classList.add('active'); // Adiciona a classe 'active' se o link for da página atual.
-                } else {
-                    link.classList.remove('active'); // Remove a classe 'active' caso contrário.
-                }
-            });
-        });
-    </script>
+    <script src="menu.js"></script>
 </body>
 </html>
