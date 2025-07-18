@@ -194,5 +194,6 @@ app.get('/', (req, res) => {
 
 // Iniciar servidor
 app.listen(PORT, () => {
+    // Log de inicialização do servidor
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
