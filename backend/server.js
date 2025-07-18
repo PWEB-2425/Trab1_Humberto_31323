@@ -3,11 +3,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const fs = require('fs').promises;
 const path = require('path');
-
-const app = express();
 require('dotenv').config();  // Carrega as variáveis de ambiente do arquivo .env
 
+const app = express();
+
 const MONGODB_URI = process.env.MONGODB_URI;
+const PORT = process.env.PORT || 3000;
 
 if (!MONGODB_URI) {
     console.error('Erro: A variável MONGODB_URI não está definida no arquivo .env');
@@ -28,20 +29,21 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true 
         process.exit(1);  // Encerra o servidor se a conexão falhar
     });
 
-
 // --- Middlewares Globais ---
 app.use(cors({
     origin: [
-        'https://example.com',  // Substitua com os domínios do frontend
-        'http://localhost:3000'
+        'http://localhost:3000',  // Adicionar o endereço do seu frontend (caso tenha deploy)
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
+
 app.use(express.json());  // Para analisar JSON no corpo da requisição
 
-// --- Definição de Schemas e Modelos Mongoose ---
+// --- Servir Arquivos Estáticos ---
+app.use(express.static(path.join(__dirname, 'frontend')));
 
+// --- Definição de Schemas e Modelos Mongoose ---
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     Nome: { type: String, required: true },
