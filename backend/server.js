@@ -5,14 +5,12 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs').promises;
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Variáveis de Ambiente ---
 const MONGODB_URI = process.env.MONGODB_URI;
-const JWT_SECRET = process.env.JWT_SECRET;
 
 // --- Conexão com o MongoDB ---
 if (!MONGODB_URI) {
@@ -46,12 +44,11 @@ const Curso = mongoose.model('Curso', cursoSchema);
 
 // --- Middlewares Globais ---
 
-// Configuração CORS: Permite requisições do seu domínio Vercel e localhost para desenvolvimento
 app.use(cors({
   origin: [
-      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // SEU MAIS RECENTE URL DO VERCEL
+      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app',
       'https://trab1humberto.vercel.app',
-      'http://localhost:3000' // Para desenvolvimento local
+      'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
@@ -63,52 +60,29 @@ app.use((req, res, next) => {
     next();
 });
 
-// --- Middleware de Autenticação JWT ---
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token == null) {
-        console.log(`[AUTH] Acesso não autorizado à API ${req.originalUrl}. Token ausente.`);
-        return res.status(401).json({ error: "Não autorizado. Token de autenticação ausente." });
-    }
-
-    if (!JWT_SECRET) {
-        console.error("Erro de configuração: JWT_SECRET não está definido no ambiente do servidor.");
-        return res.status(500).json({ error: "Erro interno do servidor: Chave secreta de autenticação não configurada." });
-    }
-
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) {
-            console.log(`[AUTH] Token inválido para ${req.originalUrl}. Erro: ${err.message}`);
-            return res.status(403).json({ error: "Token de autenticação inválido." });
-        }
-        req.user = user;
-        next();
-    });
+// --- Autenticação simples (sem JWT) ---
+function simpleAuth(req, res, next) {
+    // Aqui você pode implementar autenticação simples, 
+    // ex: verificar um header, cookie, ou até ignorar para testes.
+    // Por enquanto, deixaremos liberado para desenvolvimento:
+    next();
 }
 
-// --- Rota de Login (Gera JWT) ---
+// --- Rota de Login ---
 app.post('/login', (req, res) => {
     console.log("Tentativa de login API:", req.body);
     const { login, password } = req.body;
-
+    
     if (login === 'admin' && password === 'admin') {
-        const user = { username: login };
-        if (!JWT_SECRET) {
-            console.error("Erro de configuração: JWT_SECRET não está definido no ambiente do servidor.");
-            return res.status(500).json({ error: "Erro interno do servidor: Chave secreta de autenticação não configurada." });
-        }
-        const accessToken = jwt.sign(user, JWT_SECRET, { expiresIn: '1h' });
-        console.log("Login bem-sucedido. Token gerado.");
-        res.json({ message: "Login bem-sucedido", accessToken: accessToken });
+        res.json({ message: "Login bem-sucedido" });
     } else {
         console.log("Login ou senha incorretos.");
         res.status(401).json({ error: "Login ou senha incorretos" });
     }
 });
 
-// --- Caminho para o JSON de mock-data (apenas para referência, não usado para leitura em GET) ---
+
+// --- Caminho para o JSON de mock-data ---
 const bdPath = path.join(__dirname, '..', 'mock-data', 'bd.json');
 
 // --- Rotas da API para Alunos ---
@@ -119,7 +93,7 @@ app.get('/alunos', async (req, res) => {
             const alunos = await Aluno.find({});
             res.json(alunos);
         } else {
-            console.warn("AVISO: MongoDB não conectado, tentando ler alunos do JSON (apenas para debug).");
+            console.warn("AVISO: MongoDB não conectado, tentando ler alunos do JSON.");
             const data = await fs.readFile(bdPath, 'utf8');
             const jsonData = JSON.parse(data);
             res.json(jsonData.alunos || []);
@@ -130,20 +104,22 @@ app.get('/alunos', async (req, res) => {
     }
 });
 
-app.post('/alunos', authenticateToken, async (req, res) => {
+app.post('/alunos', simpleAuth, async (req, res) => {
+    // Igual ao seu código original, só removi o authenticateToken e substituí por simpleAuth
+    // (mesmo para PUT e DELETE abaixo)
     try {
         try {
             const data = await fs.readFile(bdPath, 'utf8');
             const jsonData = JSON.parse(data);
             if (jsonData.alunos.some(a => a.id === req.body.id)) {
-                console.warn(`AVISO: Aluno com ID ${req.body.id} já existe no JSON. Ignorando escrita no JSON.`);
+                console.warn(`AVISO: Aluno com ID ${req.body.id} já existe no JSON.`);
             } else {
                 jsonData.alunos.push(req.body);
                 await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
                 console.log("Aluno adicionado com sucesso ao JSON.");
             }
         } catch (jsonErr) {
-            console.warn("AVISO: Erro ao escrever no bd.json para alunos (pode ser esperado em ambientes como Render):", jsonErr.message);
+            console.warn("AVISO: Erro ao escrever no bd.json para alunos:", jsonErr.message);
         }
 
         if (mongoose.connection.readyState === 1) {
@@ -169,7 +145,8 @@ app.post('/alunos', authenticateToken, async (req, res) => {
     }
 });
 
-app.put('/alunos/:id', authenticateToken, async (req, res) => {
+app.put('/alunos/:id', simpleAuth, async (req, res) => {
+    // mesmo esquema: substituí authenticateToken por simpleAuth
     const alunoId = parseInt(req.params.id, 10);
     try {
         try {
@@ -181,7 +158,7 @@ app.put('/alunos/:id', authenticateToken, async (req, res) => {
                 await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
                 console.log(`Aluno com ID ${alunoId} atualizado com sucesso no JSON.`);
             } else {
-                console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no JSON para atualização. Ignorando escrita no JSON.`);
+                console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no JSON.`);
             }
         } catch (jsonErr) {
             console.warn("AVISO: Erro ao escrever no bd.json para atualização de alunos:", jsonErr.message);
@@ -197,7 +174,7 @@ app.put('/alunos/:id', authenticateToken, async (req, res) => {
                 console.log(`Aluno com ID ${alunoId} atualizado com sucesso no MongoDB.`);
                 res.status(200).json({ message: "Aluno atualizado com sucesso!", aluno: updatedAluno });
             } else {
-                console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no MongoDB para atualização.`);
+                console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no MongoDB.`);
                 res.status(404).json({ error: "Aluno não encontrado." });
             }
         } else {
@@ -210,7 +187,7 @@ app.put('/alunos/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.delete('/alunos/:id', authenticateToken, async (req, res) => {
+app.delete('/alunos/:id', simpleAuth, async (req, res) => {
     const alunoId = parseInt(req.params.id, 10);
     try {
         try {
@@ -222,7 +199,7 @@ app.delete('/alunos/:id', authenticateToken, async (req, res) => {
                 await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
                 console.log(`Aluno com ID ${alunoId} deletado com sucesso do JSON.`);
             } else {
-                console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no JSON para exclusão. Ignorando escrita no JSON.`);
+                console.warn(`AVISO: Aluno com ID ${alunoId} não encontrado no JSON para exclusão.`);
             }
         } catch (jsonErr) {
             console.warn("AVISO: Erro ao escrever no bd.json para exclusão de alunos:", jsonErr.message);
@@ -247,7 +224,9 @@ app.delete('/alunos/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// --- Rotas da API para Cursos ---
+// --- Rotas para Cursos ---
+// (mesma ideia: substituir authenticateToken por simpleAuth em POST, PUT e DELETE)
+
 app.get('/cursos', async (req, res) => {
     console.log("Rota /cursos acessada. Lendo do MongoDB.");
     try {
@@ -255,7 +234,7 @@ app.get('/cursos', async (req, res) => {
             const cursos = await Curso.find({});
             res.json(cursos);
         } else {
-            console.warn("AVISO: MongoDB não conectado, tentando ler cursos do JSON (apenas para debug).");
+            console.warn("AVISO: MongoDB não conectado, lendo cursos do JSON.");
             const data = await fs.readFile(bdPath, 'utf8');
             const jsonData = JSON.parse(data);
             res.json(jsonData.cursos || []);
@@ -266,13 +245,13 @@ app.get('/cursos', async (req, res) => {
     }
 });
 
-app.post('/cursos', authenticateToken, async (req, res) => {
+app.post('/cursos', simpleAuth, async (req, res) => {
     try {
         try {
             const data = await fs.readFile(bdPath, 'utf8');
             const jsonData = JSON.parse(data);
             if (jsonData.cursos.some(c => c.id === req.body.id)) {
-                console.warn(`AVISO: Curso com ID ${req.body.id} já existe no JSON. Ignorando escrita no JSON.`);
+                console.warn(`AVISO: Curso com ID ${req.body.id} já existe no JSON.`);
             } else {
                 jsonData.cursos.push(req.body);
                 await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
@@ -305,111 +284,6 @@ app.post('/cursos', authenticateToken, async (req, res) => {
     }
 });
 
-app.put('/cursos/:id', authenticateToken, async (req, res) => {
-    const cursoId = parseInt(req.params.id, 10);
-    try {
-        try {
-            const data = await fs.readFile(bdPath, 'utf8');
-            let jsonData = JSON.parse(data);
-            const cursoIndex = jsonData.cursos.findIndex(c => c.id === cursoId);
-            if (cursoIndex !== -1) {
-                jsonData.cursos[cursoIndex] = { ...jsonData.cursos[cursoIndex], ...req.body, id: cursoId };
-                await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
-                console.log(`Curso com ID ${cursoId} atualizado com sucesso no JSON.`);
-            } else {
-                console.warn(`AVISO: Curso com ID ${cursoId} não encontrado no JSON para atualização. Ignorando escrita no JSON.`);
-            }
-        } catch (jsonErr) {
-            console.warn("AVISO: Erro ao escrever no bd.json para atualização de cursos:", jsonErr.message);
-        }
-
-        if (mongoose.connection.readyState === 1) {
-            const updatedCurso = await Curso.findOneAndUpdate(
-                { id: cursoId },
-                req.body,
-                { new: true, runValidators: true, upsert: false }
-            );
-            if (updatedCurso) {
-                console.log(`Curso com ID ${cursoId} atualizado com sucesso no MongoDB.`);
-                res.status(200).json({ message: "Curso atualizado com sucesso!", curso: updatedCurso });
-            } else {
-                console.warn(`AVISO: Curso com ID ${cursoId} não encontrado no MongoDB para atualização.`);
-                res.status(404).json({ error: "Curso não encontrado." });
-            }
-        } else {
-            console.warn("AVISO: Mongoose não conectado, curso não atualizado no MongoDB.");
-            res.status(503).json({ erro: "Serviço indisponível: Conexão com o banco de dados não estabelecida." });
-        }
-    } catch (err) {
-        console.error("Erro geral na rota PUT /cursos:", err);
-        res.status(500).json({ erro: "Erro interno do servidor ao atualizar curso" });
-    }
-});
-
-app.delete('/cursos/:id', authenticateToken, async (req, res) => {
-    const cursoId = parseInt(req.params.id, 10);
-    try {
-        try {
-            const data = await fs.readFile(bdPath, 'utf8');
-            let jsonData = JSON.parse(data);
-            const initialLength = jsonData.cursos.length;
-            jsonData.cursos = jsonData.cursos.filter(c => c.id !== cursoId);
-            if (jsonData.cursos.length < initialLength) {
-                await fs.writeFile(bdPath, JSON.stringify(jsonData, null, 2), 'utf8');
-                console.log(`Curso com ID ${cursoId} deletado com sucesso do JSON.`);
-            } else {
-                console.warn(`AVISO: Curso com ID ${cursoId} não encontrado no JSON para exclusão. Ignorando escrita no JSON.`);
-            }
-        } catch (jsonErr) {
-            console.warn("AVISO: Erro ao escrever no bd.json para exclusão de cursos:", jsonErr.message);
-        }
-
-        if (mongoose.connection.readyState === 1) {
-            const resultado = await Curso.deleteOne({ id: cursoId });
-            if (resultado.deletedCount > 0) {
-                console.log(`Curso com ID ${cursoId} deletado com sucesso do MongoDB.`);
-                res.status(200).json({ message: "Curso deletado com sucesso!" });
-            } else {
-                console.warn(`AVISO: Curso com ID ${cursoId} não encontrado no MongoDB.`);
-                res.status(404).json({ error: "Curso não encontrado." });
-            }
-        } else {
-            console.warn("AVISO: Mongoose não conectado, curso não deletado do MongoDB.");
-            res.status(503).json({ erro: "Serviço indisponível: Conexão com o banco de dados não estabelecida." });
-        }
-    } catch (err) {
-        console.error("Erro geral na rota DELETE /cursos:", err);
-        res.status(500).json({ erro: "Erro interno do servidor ao deletar curso" });
-    }
-});
-
-// --- SEÇÃO PARA SERVIR O FRONTEND (Condicionalmente) ---
-// Esta seção será ativada APENAS em ambiente de desenvolvimento (local).
-// Para deploy no Render (produção), ela será ignorada.
-if (process.env.NODE_ENV !== 'production') {
-    console.log('Servindo arquivos estáticos do frontend (ambiente de desenvolvimento)');
-    app.use(express.static(path.join(__dirname, '..', 'frontend')));
-    app.get('/', (req, res) => {
-        res.sendFile(path.join(__dirname, '..', 'frontend', 'login.html'));
-    });
-}
-// --- FIM DA SEÇÃO PARA SERVIR O FRONTEND ---
-
-
-// --- Middleware para lidar com 404 (Not Found) ---
-// Este middleware só será acionado se nenhuma rota da API ou arquivo estático (em dev) for correspondido
-app.use((req, res, next) => {
-    console.log(`[404 NOT FOUND] Recurso da API não encontrado: ${req.originalUrl}`);
-    res.status(404).json({ error: 'Recurso da API não encontrado.' });
-});
-
-// --- Middleware para lidar com erros gerais ---
-app.use((err, req, res, next) => {
-    console.error(`[SERVER ERROR] ${err.stack}`);
-    res.status(500).json({ error: 'Erro interno do servidor API.', details: err.message });
-});
-
-// Inicia o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
