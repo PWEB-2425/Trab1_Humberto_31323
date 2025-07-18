@@ -1,50 +1,109 @@
-async function carregarAlunos() {
-    console.log("--- carregarAlunos() iniciada ---");
-    if (!tabelaAlunosTbody) {
-        console.error("Erro: `tabelaAlunosTbody` é null. Impossível carregar alunos na tabela.");
-        return;
-    }
-    
-    // Exibir o spinner antes de carregar os dados
-    document.getElementById('loadingMessage').style.display = 'block';
+document.addEventListener("DOMContentLoaded", () => {
+    const searchAlunoInput = document.getElementById("searchAlunoInput");
+    const searchCursoInput = document.getElementById("searchCursoInput");
 
-    try {
-        const resposta = await fetch(`${API_BASE_URL}/alunos`);
-        
-        if (!resposta.ok) {
-            const erroDetalhes = await resposta.text();
-            console.error(`[FETCH ALUNOS ERROR] Erro HTTP! Status: ${resposta.status} (${resposta.statusText})`, erroDetalhes);
-            showMessage(`Erro ao carregar alunos: ${resposta.status} - ${resposta.statusText}.`, 'error');
-            return;
+    const alunosSearchResultsDiv = document.getElementById("alunosSearchResults");
+    const cursosSearchResultsDiv = document.getElementById("cursosSearchResults");
+
+    const noAlunoResultsMessage = document.getElementById("noAlunoResults");
+    const noCursoResultsMessage = document.getElementById("noCursoResults");
+
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.')
+        ? "http://localhost:3000"
+        : "https://trab1-humberto-31323-58n5.onrender.com";
+
+    // Função para buscar alunos da API
+    async function fetchAlunos(query) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/alunos`);
+            const alunos = await response.json();
+
+            if (!response.ok || !Array.isArray(alunos)) {
+                showMessage("Erro ao buscar alunos", "error");
+                return;
+            }
+
+            const filteredAlunos = alunos.filter(aluno => 
+                aluno.Nome.toLowerCase().includes(query.toLowerCase()) ||
+                aluno.Apelido.toLowerCase().includes(query.toLowerCase()) ||
+                aluno.id.toString().includes(query)
+            );
+
+            if (filteredAlunos.length === 0) {
+                noAlunoResultsMessage.style.display = 'block';
+                alunosSearchResultsDiv.innerHTML = '';
+            } else {
+                noAlunoResultsMessage.style.display = 'none';
+                alunosSearchResultsDiv.innerHTML = filteredAlunos.map(aluno => 
+                    `<div class="list-group-item">
+                        <strong>ID: ${aluno.id}</strong> - ${aluno.Nome} ${aluno.Apelido}
+                    </div>`
+                ).join('');
+            }
+
+        } catch (error) {
+            console.error("Erro ao buscar alunos:", error);
+            showMessage("Erro ao conectar ao servidor. Tente novamente.", "error");
         }
-
-        const alunos = await resposta.json();
-        console.log("[FETCH ALUNOS] Dados de alunos recebidos:", alunos);
-        
-        // Limpar a tabela e esconder o spinner
-        tabelaAlunosTbody.innerHTML = '';
-        document.getElementById('loadingMessage').style.display = 'none';
-
-        if (alunos.length === 0) {
-            showMessage("Nenhum aluno cadastrado.", 'info');
-            const novaLinha = tabelaAlunosTbody.insertRow();
-            const celulaMensagem = novaLinha.insertCell(0);
-            celulaMensagem.colSpan = 5;
-            celulaMensagem.textContent = "Nenhum aluno cadastrado.";
-            celulaMensagem.style.textAlign = "center";
-            return;
-        }
-
-        alunos.forEach(aluno => {
-            const novaLinha = tabelaAlunosTbody.insertRow();
-            novaLinha.insertCell(0).textContent = aluno.id;
-            novaLinha.insertCell(1).textContent = aluno.Nome;
-            novaLinha.insertCell(2).textContent = aluno.Apelido;
-            novaLinha.insertCell(3).textContent = aluno.Curso;
-            novaLinha.insertCell(4).textContent = aluno.Ano_Curricular;
-        });
-    } catch (error) {
-        console.error("[CATCH ALUNOS ERROR] Erro no processo de carregarAlunos:", error);
-        showMessage("Erro inesperado ao carregar alunos. Verifique o console do navegador.", 'error');
     }
-}
+
+    // Função para buscar cursos da API
+    async function fetchCursos(query) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cursos`);
+            const cursos = await response.json();
+
+            if (!response.ok || !Array.isArray(cursos)) {
+                showMessage("Erro ao buscar cursos", "error");
+                return;
+            }
+
+            const filteredCursos = cursos.filter(curso => 
+                curso.Nome.toLowerCase().includes(query.toLowerCase()) ||
+                curso.Sigla.toLowerCase().includes(query.toLowerCase()) ||
+                curso.id.toString().includes(query)
+            );
+
+            if (filteredCursos.length === 0) {
+                noCursoResultsMessage.style.display = 'block';
+                cursosSearchResultsDiv.innerHTML = '';
+            } else {
+                noCursoResultsMessage.style.display = 'none';
+                cursosSearchResultsDiv.innerHTML = filteredCursos.map(curso => 
+                    `<div class="list-group-item">
+                        <strong>ID: ${curso.id}</strong> - ${curso.Nome} (${curso.Sigla})
+                    </div>`
+                ).join('');
+            }
+
+        } catch (error) {
+            console.error("Erro ao buscar cursos:", error);
+            showMessage("Erro ao conectar ao servidor. Tente novamente.", "error");
+        }
+    }
+
+    // Função para exibir mensagens de erro, sucesso ou informação
+    function showMessage(message, type = 'info') {
+        const messageDisplay = document.getElementById('messageDisplay');
+        if (messageDisplay) {
+            messageDisplay.textContent = message;
+            messageDisplay.className = `message ${type}`;
+            setTimeout(() => {
+                messageDisplay.textContent = '';
+                messageDisplay.className = 'message';
+            }, 5000);
+        } else {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+    }
+
+    // Listener de evento para a pesquisa de alunos
+    searchAlunoInput.addEventListener("input", () => {
+        fetchAlunos(searchAlunoInput.value);
+    });
+
+    // Listener de evento para a pesquisa de cursos
+    searchCursoInput.addEventListener("input", () => {
+        fetchCursos(searchCursoInput.value);
+    });
+});

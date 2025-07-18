@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();  // Carrega as variáveis de ambiente do arquivo .env
 
@@ -39,13 +38,14 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
-
 app.use(express.json());  // Para analisar JSON no corpo da requisição
 
 // --- Servir Arquivos Estáticos ---
 app.use(express.static(path.join(__dirname, '../frontend'))); // Serve a pasta frontend
 
 // --- Definição de Schemas e Modelos Mongoose ---
+
+// Modelo de Aluno
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     Nome: { type: String, required: true },
@@ -56,6 +56,7 @@ const alunoSchema = new mongoose.Schema({
 
 const Aluno = mongoose.model('Aluno', alunoSchema);
 
+// Modelo de Curso
 const cursoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     Nome: { type: String, required: true },
@@ -63,18 +64,6 @@ const cursoSchema = new mongoose.Schema({
 }, { collection: 'cursos' });
 
 const Curso = mongoose.model('Curso', cursoSchema);
-
-// --- Rota de Login ---
-app.post('/login', (req, res) => {
-    const { login, password } = req.body;
-
-    // Credenciais fixas para fins de exemplo
-    if (login === "admin" && password === "12345") {
-        res.status(200).json({ message: "Login bem-sucedido!" });
-    } else {
-        res.status(400).json({ error: "Credenciais inválidas!" });
-    }
-});
 
 // --- Rotas de API ---
 

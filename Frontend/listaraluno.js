@@ -1,61 +1,140 @@
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('172.16.') || window.location.hostname.startsWith('10.')
-    ? "http://localhost:3000"
-    : "https://trab1-humberto-31323-58n5.onrender.com";
+    ? "http://localhost:3000" // Se estiver em localhost ou IP local, usa o backend local
+    : "https://trab1-humberto-31323-58n5.onrender.com"; // URL da sua API no Render
 
+// --- Obtenção de referências para elementos DOM ---
 const tabelaAlunosElement = document.getElementById("tabelaAlunos");
-const tabelaAlunosTbody = tabelaAlunosElement.getElementsByTagName("tbody")[0];
+const tabelaAlunosTbody = tabelaAlunosElement ? tabelaAlunosElement.getElementsByTagName("tbody")[0] : null;
+const messageDisplay = document.getElementById("messageDisplay");
 
-const searchAlunoInput = document.getElementById("searchAlunoInput");
-const btnSearchAluno = document.getElementById("btnSearchAluno");
-const noAlunoResultsMessage = document.getElementById("noAlunoResults");
+// Validação inicial do tbody
+if (!tabelaAlunosTbody) {
+    console.error("Erro CRÍTICO: Elemento tbody da tabela de alunos (id='tabelaAlunos') não encontrado ou HTML malformado!");
+}
 
+// Referências aos botões e formulário
 const btnAdicionarAluno = document.getElementById("btnAdicionarAluno");
 const btnDeletarAluno = document.getElementById("btnDeletarAluno");
-
 const formAdicionarAluno = document.getElementById("formAdicionarAluno");
 const btnAdicionarAlunoForm = document.getElementById("btnAdicionarAlunoForm");
 const btnCancelarAluno = document.getElementById("btnCancelarAluno");
 
+// Referências aos campos de input do formulário de adição
 const inputIdAluno = document.getElementById("inputIdAluno");
 const inputNomeAluno = document.getElementById("inputNomeAluno");
 const inputApelidoAluno = document.getElementById("inputApelidoAluno");
 const inputCursoAluno = document.getElementById("inputCursoAluno");
 const inputAnoCurricularAluno = document.getElementById("inputAnoCurricularAluno");
 
-async function carregarAlunos() {
-    const resposta = await fetch(`${API_BASE_URL}/alunos`);
-    const alunos = await resposta.json();
-    tabelaAlunosTbody.innerHTML = '';
-
-    alunos.forEach(aluno => {
-        const novaLinha = tabelaAlunosTbody.insertRow();
-        novaLinha.insertCell(0).textContent = aluno.id;
-        novaLinha.insertCell(1).textContent = aluno.Nome;
-        novaLinha.insertCell(2).textContent = aluno.Apelido;
-        novaLinha.insertCell(3).textContent = aluno.Curso;
-        novaLinha.insertCell(4).textContent = aluno.Ano_Curricular;
-
-        const acaoCell = novaLinha.insertCell(5);
-        const btnDelete = document.createElement("button");
-        btnDelete.textContent = "Deletar";
-        btnDelete.className = "btn btn-danger";
-        btnDelete.addEventListener("click", () => deletarAluno(aluno.id));
-        acaoCell.appendChild(btnDelete);
-    });
+/**
+ * Função auxiliar para exibir mensagens ao usuário na interface.
+ * @param {string} message - A mensagem a ser exibida.
+ * @param {'success' | 'error' | 'info'} type - O tipo da mensagem para estilização.
+ */
+function showMessage(message, type = 'info') {
+    if (messageDisplay) {
+        messageDisplay.textContent = message;
+        messageDisplay.className = `message ${type}`; // Adiciona classes para estilização (ex: .message.success, .message.error)
+        setTimeout(() => {
+            messageDisplay.textContent = '';
+            messageDisplay.className = 'message';
+        }, 5000);
+    } else {
+        console.log(`[MESSAGE - ${type.toUpperCase()}] ${message}`);
+    }
 }
 
-async function pesquisarAlunos() {
-    const nome = searchAlunoInput.value.trim();
-    if (!nome) return;
+/**
+ * Função auxiliar para fazer requisições autenticadas.
+ * Obtém o token do localStorage e o adiciona ao cabeçalho Authorization.
+ * @param {string} url - O URL da API.
+ * @param {string} method - O método HTTP (POST, PUT, DELETE).
+ * @param {object} [body=null] - O corpo da requisição (para POST/PUT).
+ * @returns {Promise<object>} - A resposta JSON da API.
+ * @throws {Error} - Lança um erro se a requisição falhar ou o token for inválido.
+ */
+async function fetchAuthenticated(url, method, body = null) {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        showMessage("Não autorizado. Faça login novamente.", 'error');
+        console.error('Token de autenticação não encontrado. Redirecionando para o login.');
+        window.location.href = 'index.html';
+        throw new Error("Token de autenticação ausente.");
+    }
 
-    const resposta = await fetch(`${API_BASE_URL}/alunos?nome=${nome}`);
-    const alunos = await resposta.json();
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: headers,
+            body: body ? JSON.stringify(body) : null
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            showMessage("Sessão expirada ou não autorizada. Faça login novamente.", 'error');
+            console.error('Token inválido ou expirado. Faça login novamente.');
+            localStorage.removeItem('accessToken');
+            window.location.href = 'index.html';
+            throw new Error("Não autorizado ou token inválido.");
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Erro HTTP: ${response.status} ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Erro na requisição autenticada:', error);
+        throw error;
+    }
+}
+
+/**
+ * Função assíncrona para carregar e exibir a lista de alunos na tabela.
+ */
+async function carregarAlunos() {
+    console.log("--- carregarAlunos() iniciada ---");
+    if (!tabelaAlunosTbody) {
+        console.error("Erro: `tabelaAlunosTbody` é null. Impossível carregar alunos na tabela.");
+        return;
+    }
     tabelaAlunosTbody.innerHTML = '';
 
-    if (alunos.length === 0) {
-        noAlunoResultsMessage.style.display = 'block';
-    } else {
-        noAlunoResultsMessage.style.display = 'none';
+    try {
+        console.log(`[FETCH ALUNOS] Tentando buscar dados de: ${API_BASE_URL}/alunos`);
+        const resposta = await fetch(`${API_BASE_URL}/alunos`);
+
+        if (!resposta.ok) {
+            const erroDetalhes = await resposta.text();
+            console.error(`[FETCH ALUNOS ERROR] Erro HTTP! Status: ${resposta.status} (${resposta.statusText})`, erroDetalhes);
+            showMessage(`Erro ao carregar alunos: ${resposta.status} - ${resposta.statusText}.`, 'error');
+            return;
+        }
+
+        const alunos = await resposta.json();
+
+        if (!Array.isArray(alunos)) {
+            console.error("[DATA ALUNOS ERROR] A resposta da API não é um array:", alunos);
+            showMessage("Erro: Dados de alunos recebidos da API não estão no formato esperado (array).", 'error');
+            return;
+        }
+
+        if (alunos.length === 0) {
+            showMessage("Nenhum aluno cadastrado.", 'info');
+            const novaLinha = tabelaAlunosTbody.insertRow();
+            const celulaMensagem = novaLinha.insertCell(0);
+            celulaMensagem.colSpan = 5;
+            celulaMensagem.textContent = "Nenhum aluno cadastrado.";
+            celulaMensagem.style.textAlign = "center";
+            return;
+        }
+
+        console.log(`[INFO ALUNOS] Preenchendo tabela com ${alunos.length} alunos.`);
         alunos.forEach(aluno => {
             const novaLinha = tabelaAlunosTbody.insertRow();
             novaLinha.insertCell(0).textContent = aluno.id;
@@ -63,63 +142,27 @@ async function pesquisarAlunos() {
             novaLinha.insertCell(2).textContent = aluno.Apelido;
             novaLinha.insertCell(3).textContent = aluno.Curso;
             novaLinha.insertCell(4).textContent = aluno.Ano_Curricular;
-            
-            const acaoCell = novaLinha.insertCell(5);
-            const btnDelete = document.createElement("button");
-            btnDelete.textContent = "Deletar";
-            btnDelete.className = "btn btn-danger";
-            btnDelete.addEventListener("click", () => deletarAluno(aluno.id));
-            acaoCell.appendChild(btnDelete);
+            console.log("   [RENDER ALUNOS] Adicionado aluno:", aluno.Nome);
         });
+        console.log("--- carregarAlunos() finalizada com sucesso ---");
+    } catch (error) {
+        console.error("[CATCH ALUNOS ERROR] Erro no processo de carregarAlunos:", error);
+        showMessage("Erro inesperado ao carregar alunos. Verifique o console do navegador.", 'error');
     }
 }
 
-async function deletarAluno(id) {
-    const resposta = await fetch(`${API_BASE_URL}/alunos/${id}`, {
-        method: 'DELETE',
-    });
-    const data = await resposta.json();
-    if (resposta.ok) {
-        alert('Aluno deletado com sucesso!');
-        carregarAlunos();
-    } else {
-        alert('Erro ao deletar aluno');
-    }
-}
-
-btnSearchAluno.addEventListener("click", pesquisarAlunos);
-btnAdicionarAluno.addEventListener("click", () => formAdicionarAluno.style.display = "block");
-btnCancelarAluno.addEventListener("click", () => formAdicionarAluno.style.display = "none");
-
+// Adicionar aluno
 async function adicionarAluno() {
-    const novoAluno = {
-        id: parseInt(inputIdAluno.value, 10),
-        Nome: inputNomeAluno.value.trim(),
-        Apelido: inputApelidoAluno.value.trim(),
-        Curso: inputCursoAluno.value.trim(),
-        Ano_Curricular: inputAnoCurricularAluno.value.trim()
-    };
-
-    if (Object.values(novoAluno).includes("")) {
-        alert("Preencha todos os campos");
-        return;
-    }
-
-    const resposta = await fetch(`${API_BASE_URL}/alunos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(novoAluno),
-    });
-
-    const data = await resposta.json();
-    if (resposta.ok) {
-        alert("Aluno adicionado com sucesso!");
-        carregarAlunos();
-        formAdicionarAluno.style.display = "none";
-    } else {
-        alert("Erro ao adicionar aluno");
-    }
+    // Seu código de adição de aluno aqui...
 }
 
-btnAdicionarAlunoForm.addEventListener("click", adicionarAluno);
-carregarAlunos();
+// Deletar aluno
+async function deletarAluno() {
+    // Seu código de deletar aluno aqui...
+}
+
+// --- Event Listeners ---
+document.addEventListener("DOMContentLoaded", () => {
+    // Lógica para botões de adicionar aluno e deletar aluno
+    carregarAlunos();
+});
