@@ -64,6 +64,18 @@ const cursoSchema = new mongoose.Schema({
 
 const Curso = mongoose.model('Curso', cursoSchema);
 
+// --- Rota de Login ---
+app.post('/login', (req, res) => {
+    const { login, password } = req.body;
+
+    // Credenciais fixas para fins de exemplo
+    if (login === "admin" && password === "12345") {
+        res.status(200).json({ message: "Login bem-sucedido!" });
+    } else {
+        res.status(400).json({ error: "Credenciais inválidas!" });
+    }
+});
+
 // --- Rotas de API ---
 
 // Rota para buscar alunos
