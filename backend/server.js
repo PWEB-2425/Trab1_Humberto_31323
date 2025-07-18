@@ -7,9 +7,11 @@ require('dotenv').config();  // Carrega as variáveis de ambiente do arquivo .en
 
 const app = express();
 
+// Variáveis de ambiente
 const MONGODB_URI = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 3000;
 
+// Verificação da URI do MongoDB
 if (!MONGODB_URI) {
     console.error('Erro: A variável MONGODB_URI não está definida no arquivo .env');
     process.exit(1);  // Encerra o servidor se não houver a URI
@@ -41,7 +43,7 @@ app.use(cors({
 app.use(express.json());  // Para analisar JSON no corpo da requisição
 
 // --- Servir Arquivos Estáticos ---
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, '../frontend'))); // Serve a pasta frontend
 
 // --- Definição de Schemas e Modelos Mongoose ---
 const alunoSchema = new mongoose.Schema({
@@ -148,9 +150,9 @@ app.delete('/cursos/:id', async (req, res) => {
     }
 });
 
-// Rota raiz '/' para verificar o servidor
+// --- Rota para servir o index.html ---
 app.get('/', (req, res) => {
-    res.send('Servidor funcionando!');
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));  // Modifique para o caminho correto do seu HTML
 });
 
 // Iniciando o servidor
