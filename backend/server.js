@@ -6,6 +6,16 @@ require('dotenv').config(); // Carrega .env
 
 const app = express();
 
+// --- CORS Configurado ---
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'https://trab1-humberto-31323-final-d8k5g22do.vercel.app', // <-- FRONTEND Vercel
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
 // --- Variáveis de Ambiente ---
 const MONGODB_URI = process.env.MONGODB_URI;
 const PORT = process.env.PORT || 3000;
@@ -28,16 +38,6 @@ mongoose.connect(MONGODB_URI, {
     console.error('❌ Erro ao conectar ao MongoDB:', err.message);
     process.exit(1);
 });
-
-// --- CORS Configurado ---
-app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'https://trab1-humberto-31323-final-d8k5g22do.vercel.app', // <-- FRONTEND Vercel
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
 
 app.use(express.json());
 

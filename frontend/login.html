@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title> <!-- Título da página: "Login". -->
+    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones, se necessário. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Inclui a biblioteca Bootstrap CSS para estilos pré-definidos e responsividade. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Estilos globais */
+        body {
+            font-family: 'Inter', sans-serif; /* Define a fonte principal. */
+            margin: 0; /* Remove margens padrão. */
+            padding: 20px; /* Adiciona preenchimento em torno do conteúdo. */
+            background-color: #1a1a1a; /* Fundo muito escuro/preto. */
+            color: #f0f0f0; /* Cor do texto principal (branco acinzentado). */
+            min-height: 100vh; /* Garante que o corpo ocupe a altura total da viewport. */
+            display: flex; /* Usa Flexbox para centralizar o conteúdo. */
+            justify-content: center; /* Centraliza horizontalmente. */
+            align-items: center; /* Centraliza verticalmente na página de login, importante para formulários. */
+        }
+
+        .container {
+            background-color: #2b2b2b; /* Fundo mais claro para o conteúdo principal. */
+            padding: 30px; /* Preenchimento interno do contêiner. */
+            border-radius: 12px; /* Cantos arredondados. */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra para profundidade. */
+            width: 100%; /* Largura total dentro do padding do body. */
+            max-width: 450px; /* Largura menor para o formulário de login, focando-o. */
+            box-sizing: border-box; /* Inclui padding e border na largura/altura. */
+        }
+
+        h1, h4 {
+            color: #ff0088; /* Cor rosa vibrante para títulos. */
+            margin-bottom: 25px; /* Espaço abaixo dos títulos. */
+            text-align: center; /* Centraliza o texto dos títulos. */
+            font-weight: bold; /* Texto em negrito. */
+        }
+
+        /* Estilo para formulários e seus inputs */
+        .form-container {
+            margin-top: 30px; /* Margem superior. */
+            padding: 25px; /* Preenchimento interno. */
+            border: 1px solid #ff0088; /* Borda rosa vibrante. */
+            border-radius: 10px; /* Cantos arredondados. */
+            background-color: #222222; /* Fundo escuro. */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Sombra. */
+            /* display: block; -- Removido, já que o formulário está visível por padrão */
+        }
+
+        .form-label {
+            color: #f0f0f0; /* Cor do texto para labels. */
+            font-weight: bold; /* Texto em negrito. */
+            margin-bottom: 8px; /* Espaço abaixo da label. */
+        }
+
+        .form-control {
+            background-color: #333333; /* Fundo escuro para campos de input. */
+            border: 1px solid #555555; /* Borda cinza escura. */
+            color: #ffffff; /* Cor do texto nos inputs. */
+            border-radius: 6px; /* Cantos arredondados. */
+            padding: 10px; /* Preenchimento interno. */
+            width: 100%; /* Ocupa a largura total do pai. */
+            box-sizing: border-box; /* Inclui padding na largura. */
+        }
+        .form-control:focus {
+            border-color: #ff0088; /* Borda rosa no foco. */
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 136, 0.25); /* Sombra de foco rosa. */
+            background-color: #3a3a3a; /* Fundo ligeiramente mais claro no foco. */
+            color: #ffffff; /* Mantém a cor do texto branca. */
+        }
+
+        /* Estilo dos botões (Bootstrap) */
+        .btn {
+            padding: 10px 20px; /* Preenchimento interno. */
+            border-radius: 8px; /* Cantos arredondados. */
+            font-weight: bold; /* Texto em negrito. */
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease; /* Transições suaves. */
+            margin-right: 10px; /* Margem à direita para espaçamento entre botões. */
+        }
+
+        .btn-primary { /* Mapeado para o estilo rosa para o botão de login */
+            background-color: #ff0088; /* Fundo rosa vibrante. */
+            border-color: #ff0088; /* Borda rosa. */
+            color: #ffffff; /* Texto branco. */
+        }
+        .btn-primary:hover {
+            background-color: #e6007a; /* Rosa mais escuro no hover. */
+            border-color: #e6007a; /* Borda rosa mais escura. */
+        }
+        
+        /* Ajustes de responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px; /* Reduz o preenchimento interno do contêiner. */
+            }
+            .btn {
+                width: 100%; /* Botões ocupam a largura total. */
+                margin-bottom: 10px; /* Adiciona margem inferior entre botões empilhados. */
+                margin-right: 0; /* Remove margem direita. */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Contêiner principal que envolve todo o conteúdo da página de login. -->
+    <div class="container">
+        <h1 class="mt-4">Login</h1> <!-- Título principal da página. -->
+        <!-- Formulário de login. Está sempre visível ('display: block'). -->
+        <form id="loginForm" class="form-container" style="display: block;">
+            <div class="mb-3">
+                <label for="loginUsername" class="form-label">Usuário:</label> <!-- Label e input para o nome de usuário. -->
+                <input type="text" class="form-control" id="loginUsername" required> <!-- Campo obrigatório. -->
+            </div>
+            <div class="mb-3">
+                <label for="loginPassword" class="form-label">Senha:</label> <!-- Label e input para a senha. -->
+                <input type="password" class="form-control" id="loginPassword" required> <!-- Campo obrigatório, tipo 'password' esconde a digitação. -->
+            </div>
+            <!-- Div para o botão de submissão do formulário, centralizado. -->
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary w-100">Entrar</button> <!-- Botão de login, ocupa a largura total. -->
+            </div>
+        </form>
+        <!-- Parágrafo para exibir mensagens de login (ex: erro, sucesso). Inicialmente com cor vermelha. -->
+        <p id="loginMessage" class="text-center mt-3" style="color: red;"></p>
+    </div>
+
+    <!-- Script JavaScript para lidar com a lógica do login (envio do formulário, validação, comunicação com o backend). -->
+    <script src="login.js"></script>
+</body>
+</html>
+
+
+<!---->
+
+
