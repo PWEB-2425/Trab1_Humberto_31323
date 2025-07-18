@@ -50,6 +50,7 @@ const Curso = mongoose.model('Curso', cursoSchema);
 app.use(cors({
   origin: [
       'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // SEU MAIS RECENTE URL DO VERCEL
+      'https://trab1humberto.vercel.app',
       'http://localhost:3000' // Para desenvolvimento local
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
