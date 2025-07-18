@@ -156,14 +156,6 @@ app.delete('/cursos/:id', async (req, res) => {
     }
 });
 
-// --- Servir o Frontend ---
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-// --- Fallback (SPA) ---
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
-});
-
 // --- Iniciar servidor ---
 app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
