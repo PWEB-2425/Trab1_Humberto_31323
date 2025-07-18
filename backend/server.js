@@ -1,9 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const fs = require('fs').promises;
 const path = require('path');
-require('dotenv').config();  // Carrega as variáveis de ambiente do arquivo .env
+require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
 
 const app = express();
 
@@ -14,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Verificação da URI do MongoDB
 if (!MONGODB_URI) {
     console.error('Erro: A variável MONGODB_URI não está definida no arquivo .env');
-    process.exit(1);  // Encerra o servidor se não houver a URI
+    process.exit(1); // Encerra o servidor se não houver a URI
 } else {
     console.log('MONGODB_URI carregada com sucesso:', MONGODB_URI);
 }
@@ -28,22 +27,22 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true 
     })
     .catch((err) => {
         console.error('Erro ao conectar ao MongoDB:', err.message);
-        process.exit(1);  // Encerra o servidor se a conexão falhar
+        process.exit(1); // Encerra o servidor se a conexão falhar
     });
 
 // --- Middlewares Globais ---
 app.use(cors({
     origin: [
-        'http://localhost:3000',  // Adicionar o endereço do seu frontend (caso tenha deploy)
+        'http://localhost:3000', // Para desenvolvimento local
+        'https://trab1-humberto-31323-58n5.onrender.com', // URL do seu backend no Render
+        // Adicione o URL do seu frontend Vercel aqui quando fizer o deploy
+        // Ex: 'https://seu-frontend-vercel-url.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
 
-app.use(express.json());  // Para analisar JSON no corpo da requisição
-
-// --- Servir Arquivos Estáticos ---
-app.use(express.static(path.join(__dirname, '../frontend'))); // Serve a pasta frontend
+app.use(express.json()); // Para analisar JSON no corpo da requisição
 
 // --- Definição de Schemas e Modelos Mongoose ---
 const alunoSchema = new mongoose.Schema({
@@ -64,17 +63,9 @@ const cursoSchema = new mongoose.Schema({
 
 const Curso = mongoose.model('Curso', cursoSchema);
 
-// --- Rota para a raiz ('/') para redirecionar para o login.html ---
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'login.html'));  // Serve o login.html da pasta frontend
-});
+// --- Rotas de API para alunos e cursos ---
 
-// --- Rota para a página de login ---
-app.get('/login.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'login.html'));  // Serve a página login.html
-});
-
-// --- Outras rotas de API para alunos e cursos ---
+// GET todos os alunos
 app.get('/alunos', async (req, res) => {
     try {
         const alunos = await Aluno.find({});
@@ -85,6 +76,7 @@ app.get('/alunos', async (req, res) => {
     }
 });
 
+// POST novo aluno
 app.post('/alunos', async (req, res) => {
     const { id, Nome, Apelido, Curso, Ano_Curricular } = req.body;
     const novoAluno = new Aluno({ id, Nome, Apelido, Curso, Ano_Curricular });
@@ -98,6 +90,26 @@ app.post('/alunos', async (req, res) => {
     }
 });
 
+// PUT (Atualizar) aluno por ID
+app.put('/alunos/:id', async (req, res) => {
+    const alunoId = parseInt(req.params.id, 10);
+    const updatedData = req.body;
+
+    try {
+        // Use findOneAndUpdate para encontrar pelo 'id' (seu campo personalizado) e atualizar
+        const result = await Aluno.findOneAndUpdate({ id: alunoId }, updatedData, { new: true, runValidators: true });
+        if (result) {
+            res.status(200).json({ message: 'Aluno atualizado com sucesso!', aluno: result });
+        } else {
+            res.status(404).json({ error: 'Aluno não encontrado' });
+        }
+    } catch (err) {
+        console.error('Erro ao atualizar aluno:', err);
+        res.status(500).json({ error: 'Erro ao atualizar aluno' });
+    }
+});
+
+// DELETE aluno por ID
 app.delete('/alunos/:id', async (req, res) => {
     const alunoId = req.params.id;
 
@@ -114,6 +126,7 @@ app.delete('/alunos/:id', async (req, res) => {
     }
 });
 
+// GET todos os cursos
 app.get('/cursos', async (req, res) => {
     try {
         const cursos = await Curso.find({});
@@ -124,6 +137,7 @@ app.get('/cursos', async (req, res) => {
     }
 });
 
+// POST novo curso
 app.post('/cursos', async (req, res) => {
     const { id, Nome, Sigla } = req.body;
     const novoCurso = new Curso({ id, Nome, Sigla });
@@ -137,6 +151,26 @@ app.post('/cursos', async (req, res) => {
     }
 });
 
+// PUT (Atualizar) curso por ID
+app.put('/cursos/:id', async (req, res) => {
+    const cursoId = parseInt(req.params.id, 10);
+    const updatedData = req.body;
+
+    try {
+        // Use findOneAndUpdate para encontrar pelo 'id' (seu campo personalizado) e atualizar
+        const result = await Curso.findOneAndUpdate({ id: cursoId }, updatedData, { new: true, runValidators: true });
+        if (result) {
+            res.status(200).json({ message: 'Curso atualizado com sucesso!', curso: result });
+        } else {
+            res.status(404).json({ error: 'Curso não encontrado' });
+        }
+    } catch (err) {
+        console.error('Erro ao atualizar curso:', err);
+        res.status(500).json({ error: 'Erro ao atualizar curso' });
+    }
+});
+
+// DELETE curso por ID
 app.delete('/cursos/:id', async (req, res) => {
     const cursoId = req.params.id;
 
@@ -151,6 +185,16 @@ app.delete('/cursos/:id', async (req, res) => {
         console.error('Erro ao deletar curso:', err);
         res.status(500).json({ error: 'Erro ao deletar curso' });
     }
+});
+
+// --- Servir Arquivos Estáticos (DEVE VIR DEPOIS DAS ROTAS DE API) ---
+// Isso permite que o Express sirva os arquivos HTML, CSS, JS do frontend.
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// --- Rota para a raiz ('/') para servir o index.html (Menu Inicial) ---
+// Quando alguém acessa a URL base do seu backend, ele serve o index.html do frontend.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
 });
 
 // Iniciando o servidor

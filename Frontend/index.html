@@ -1,13 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecionando para Login...</title>
-    <!-- Redireciona para login.html imediatamente -->
-    <meta http-equiv="refresh" content="0; url=login.html">
+    <title>Menu Inicial - Trabalho1_PW</title>
+    <!-- Inclui a biblioteca Bootstrap Icons para usar ícones (ex: hambúrguer, casa). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <!-- Inclui a biblioteca Bootstrap CSS para estilos básicos e responsividade. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+    <!-- LINK PARA O SEU NOVO FICHEIRO CSS EXTERNO -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <p>Se você não for redirecionado automaticamente, clique <a href="login.html">aqui para a página de login</a>.</p>
+<!-- Adicione a classe 'has-sidebar' ao body para o layout com menu lateral -->
+<body class="has-sidebar">
+
+    <!-- Botão de menu (ícone de hambúrguer) -->
+    <div class="btn-menu" id="menu-toggle">
+        <i class="bi bi-list"></i> <!-- Ícone de lista/hambúrguer do Bootstrap Icons. -->
+    </div>
+
+    <!-- Menu lateral de navegação -->
+    <nav class="menu-lateral" id="menu-lateral">
+        <!-- Título ou logo do menu lateral. -->
+        <h4 style="color: var(--cor-destaque-rosa); text-align: center; width: 100%; margin-bottom: 20px;">Navegação</h4>
+        <ul id="menu-items">
+            <!-- Item de menu: Menu Inicial -->
+            <li class="item-menu">
+                <!-- Link para a página inicial, marcado como ativo. -->
+                <a href="index.html" aria-label="Ir para o menu inicial" class="active">
+                    <span class="icon"><i class="bi bi-house"></i></span> <!-- Ícone de casa. -->
+                    <span class="txt-link">Menu Inicial</span>
+                </a>
+            </li>
+            <!-- Item de menu: Dashboard -->
+            <li class="item-menu">
+                <a href="dashboard.html" aria-label="Ir para o dashboard">
+                    <span class="icon"><i class="bi bi-columns-gap"></i></span> <!-- Ícone de dashboard. -->
+                    <span class="txt-link">Dashboard</span>
+                </a>
+            </li>
+            <!-- Item de menu: Alunos -->
+            <li class="item-menu">
+                <a href="listaralunos.html" aria-label="Gerir Alunos">
+                    <span class="icon"><i class="bi bi-people"></i></span> <!-- Ícone de pessoas. -->
+                    <span class="txt-link">Alunos</span>
+                </a>
+            </li>
+            <!-- Item de menu: Cursos -->
+            <li class="item-menu">
+                <a href="listarcursos.html" aria-label="Gerir Cursos">
+                    <span class="icon"><i class="bi bi-book"></i></span> <!-- Ícone de livro. -->
+                    <span class="txt-link">Cursos</span>
+                </a>
+            </li>
+            <!-- Item de menu: Sair (Não é mais um logout real, mas um link para a raiz se necessário) -->
+            <li class="item-menu">
+                <a href="index.html" aria-label="Sair"> <!-- Redireciona para a própria página inicial -->
+                    <span class="icon"><i class="bi bi-box-arrow-right"></i></span> <!-- Ícone de sair. -->
+                    <span class="txt-link">Sair</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Conteúdo principal da página -->
+    <main>
+        <div class="main-content-wrapper">
+            <h1>Menu Inicial</h1>
+            <p class="text-center">Bem-vindo ao Menu Inicial do Trabalho1_PW!</p>
+            <!-- Marquee (texto rolante) para uma mensagem dinâmica. -->
+            <marquee behavior="scroll" direction="left" scrollamount="10">
+                <h2>Explore as opções no menu lateral.</h2>
+            </marquee>
+            <p class="text-center mt-4">Clique no ícone de hambúrguer no canto superior esquerdo para abrir o menu de navegação.</p>
+        </div>
+    </main>
+
+    <!-- Script JavaScript para a interatividade do menu lateral. -->
+    <script>
+        const menuBtn = document.getElementById("menu-toggle"); // Botão de alternar o menu.
+        const menu = document.getElementById("menu-lateral");    // O elemento do menu lateral.
+        const body = document.body;                              // O elemento <body> da página.
+
+        // Adiciona um event listener ao botão de menu.
+        // Ao clicar, ele alterna as classes CSS para abrir/fechar o menu e ajustar o layout do corpo.
+        menuBtn.addEventListener("click", () => {
+            menu.classList.toggle("open"); // Adiciona/remove a classe 'open' no menu lateral.
+            body.classList.toggle("menu-aberto"); // Adiciona/remove a classe 'menu-aberto' no body.
+        });
+
+        // Lógica para destacar o item de menu ativo (opcional, para indicar a página atual).
+        document.addEventListener("DOMContentLoaded", () => {
+            // Obtém o nome do arquivo HTML atual da URL (ex: "index.html", "dashboard.html").
+            const currentPath = window.location.pathname.split('/').pop();
+            // Seleciona todos os links de navegação dentro do menu lateral.
+            const navLinks = document.querySelectorAll('.menu-lateral a');
+
+            // Itera sobre cada link de navegação.
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href'); // Obtém o valor do atributo 'href' do link.
+                // Verifica se o 'href' do link corresponde ao caminho atual da página.
+                // Também lida com o caso em que a página inicial pode ser referenciada por 'index.html' ou por uma string vazia.
+                if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
+                    link.classList.add('active'); // Adiciona a classe 'active' se o link for da página atual.
+                } else {
+                    link.classList.remove('active'); // Remove a classe 'active' caso contrário.
+                }
+            });
+        });
+    </script>
 </body>
 </html>
