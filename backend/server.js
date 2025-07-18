@@ -17,24 +17,23 @@ if (!MONGODB_URI) {
     console.log('MONGODB_URI carregada com sucesso:', MONGODB_URI);
 }
 
-// --- MongoDB ---
+// --- Conexão MongoDB ---
 mongoose.set('strictQuery', false);
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then(() => console.log('Conectado ao MongoDB com sucesso!'))
+.then(() => console.log('✅ Conectado ao MongoDB com sucesso!'))
 .catch((err) => {
-    console.error('Erro ao conectar ao MongoDB:', err.message);
+    console.error('❌ Erro ao conectar ao MongoDB:', err.message);
     process.exit(1);
 });
 
-// --- Middlewares ---
+// --- CORS Configurado ---
 app.use(cors({
     origin: [
         'http://localhost:3000',
-        'https://trab1-humberto-31323-58n5.onrender.com',
-        // Adicione a URL do Vercel aqui após o deploy do front-end
+        'https://trab1-humberto-31323-final-d8k5g22do.vercel.app', // <-- FRONTEND Vercel
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
@@ -42,14 +41,14 @@ app.use(cors({
 
 app.use(express.json());
 
-// --- Header opcional para permitir scripts inline (só se necessário) ---
-// ⚠️ Comente se não precisar de inline scripts!
+// --- CSP Header seguro ---
+// Removido 'unsafe-inline' para evitar o erro do navegador (melhor prática)
 app.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net");
+    res.setHeader("Content-Security-Policy", "script-src 'self' https://cdn.jsdelivr.net;");
     next();
 });
 
-// --- Modelos Mongoose ---
+// --- Esquemas e Modelos ---
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     Nome: { type: String, required: true },
@@ -157,15 +156,15 @@ app.delete('/cursos/:id', async (req, res) => {
     }
 });
 
-// --- Servir o frontend ---
+// --- Servir o Frontend ---
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Fallback: qualquer rota que não for API, retorna index.html
+// --- Fallback (SPA) ---
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
 });
 
 // --- Iniciar servidor ---
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
