@@ -29,7 +29,8 @@ const messageDisplay = document.getElementById('messageDisplay');
 function showMessage(message, type = 'info') {
     if (messageDisplay) {
         messageDisplay.textContent = message;
-        messageDisplay.className = `message ${type}`; // Adiciona classes para estilização (ex: .message.success, .message.error)
+        // Adiciona classes para estilização (ex: .message.success, .message.error)
+        messageDisplay.className = `message ${type}`; 
         setTimeout(() => {
             messageDisplay.textContent = '';
             messageDisplay.className = 'message';
@@ -52,6 +53,9 @@ async function searchAlunos() {
     }
 
     try {
+        // Log para depuração: O que está a ser pesquisado e para onde
+        console.log(`A pesquisar alunos com termo: "${searchTerm}" em: ${API_BASE_URL}/alunos`);
+        
         const response = await fetch(`${API_BASE_URL}/alunos`);
         if (!response.ok) {
             const errorData = await response.json();
@@ -59,12 +63,18 @@ async function searchAlunos() {
         }
         const alunos = await response.json();
 
+        // Log para depuração: Dados de alunos recebidos
+        console.log("Alunos recebidos:", alunos);
+
         const filteredAlunos = alunos.filter(aluno =>
             aluno.Nome.toLowerCase().includes(searchTerm) ||
             aluno.Apelido.toLowerCase().includes(searchTerm) ||
             aluno.id.toString().includes(searchTerm) ||
             aluno.Curso.toLowerCase().includes(searchTerm)
         );
+
+        // Log para depuração: Alunos filtrados
+        console.log("Alunos filtrados:", filteredAlunos);
 
         if (filteredAlunos.length > 0) {
             filteredAlunos.forEach(aluno => {
@@ -96,6 +106,9 @@ async function searchCursos() {
     }
 
     try {
+        // Log para depuração: O que está a ser pesquisado e para onde
+        console.log(`A pesquisar cursos com termo: "${searchTerm}" em: ${API_BASE_URL}/cursos`);
+
         const response = await fetch(`${API_BASE_URL}/cursos`);
         if (!response.ok) {
             const errorData = await response.json();
@@ -103,11 +116,17 @@ async function searchCursos() {
         }
         const cursos = await response.json();
 
+        // Log para depuração: Dados de cursos recebidos
+        console.log("Cursos recebidos:", cursos);
+
         const filteredCursos = cursos.filter(curso =>
             curso.Nome.toLowerCase().includes(searchTerm) ||
             curso.Sigla.toLowerCase().includes(searchTerm) ||
             curso.id.toString().includes(searchTerm)
         );
+
+        // Log para depuração: Cursos filtrados
+        console.log("Cursos filtrados:", filteredCursos);
 
         if (filteredCursos.length > 0) {
             filteredCursos.forEach(curso => {
@@ -139,24 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
         searchCursoInput.addEventListener('input', searchCursos);
     }
 
-    // Lógica para o menu lateral (já existente e mantida)
-    const menuBtn = document.getElementById("menu-toggle");
-    const menu = document.getElementById("menu-lateral");
-    const body = document.body;
-
-    if (menuBtn && menu && body) {
-        menuBtn.addEventListener("click", () => {
-            menu.classList.toggle("open");
-            body.classList.toggle("menu-aberto");
-        });
-    }
-
-    // Lógica para destacar o item de menu ativo (já existente e mantida)
+    // Lógica para destacar o item de menu ativo
+    // Esta lógica é independente do menu lateral e pode permanecer aqui.
     const currentPath = window.location.pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.menu-lateral a');
 
     navLinks.forEach(link => {
         const linkHref = link.getAttribute('href');
+        // Verifica se o link corresponde ao caminho atual ou se é a página inicial
         if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
             link.classList.add('active');
         } else {
