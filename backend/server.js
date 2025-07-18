@@ -52,8 +52,8 @@ const Curso = mongoose.model('Curso', cursoSchema);
 // Configuração CORS: Permite requisições do seu domínio Vercel e localhost para desenvolvimento
 app.use(cors({
   origin: [
-      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // <<< NOVO E MAIS RECENTE URL DO VERCEL
-      'http://localhost:3000' // Para desenvolvimento local
+      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // <<< AQUI!
+      'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
