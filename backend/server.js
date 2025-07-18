@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const fs = require('fs').promises;
 const path = require('path');
 require('dotenv').config();  // Carrega as variáveis de ambiente do arquivo .env
 
@@ -38,14 +39,10 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
+
 app.use(express.json());  // Para analisar JSON no corpo da requisição
 
-// --- Servir Arquivos Estáticos ---
-app.use(express.static(path.join(__dirname, '../frontend'))); // Serve a pasta frontend
-
 // --- Definição de Schemas e Modelos Mongoose ---
-
-// Modelo de Aluno
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     Nome: { type: String, required: true },
@@ -56,7 +53,6 @@ const alunoSchema = new mongoose.Schema({
 
 const Aluno = mongoose.model('Aluno', alunoSchema);
 
-// Modelo de Curso
 const cursoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     Nome: { type: String, required: true },
@@ -65,9 +61,33 @@ const cursoSchema = new mongoose.Schema({
 
 const Curso = mongoose.model('Curso', cursoSchema);
 
-// --- Rotas de API ---
+// --- Rota de Login ---
+app.post('/login', async (req, res) => {
+    const { login, password } = req.body;
 
-// Rota para buscar alunos
+    console.log("Tentando fazer login com:", login, password);
+
+    // Simulando a verificação com dados fixos (substitua com lógica real de autenticação, ex: consulta ao banco de dados)
+    const users = [
+        { username: 'admin', password: 'admin123' }  // Exemplo de dados de login
+    ];
+
+    // Encontrar usuário no banco de dados ou usar uma lógica mais avançada
+    const user = users.find(u => u.username === login && u.password === password);
+
+    if (user) {
+        // Aqui você gera um token (por exemplo, JWT) para autenticação
+        const token = 'seu_token_aqui';  // Geração de token real aqui
+
+        // Retorna o token e mensagem de sucesso
+        res.status(200).json({ message: 'Login bem-sucedido!', token });
+    } else {
+        // Se as credenciais não corresponderem, retorna um erro
+        res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+});
+
+// --- Rotas de API ---
 app.get('/alunos', async (req, res) => {
     try {
         const alunos = await Aluno.find({});
