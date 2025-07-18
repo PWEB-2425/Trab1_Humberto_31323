@@ -1,335 +1,348 @@
-/* frontend/styles.css */
-
-/* --- Variáveis CSS para Cores e Propriedades Comuns --- */
+/* Variáveis CSS para cores */
 :root {
-    --cor-fundo-principal: #1a1a1a; /* Fundo muito escuro/preto */
-    --cor-fundo-secundario: #2b2b2b; /* Fundo mais claro para cards/conteúdo */
-    --cor-fundo-menu: #0d0d0d; /* Fundo muito escuro para o menu lateral */
-    --cor-texto-principal: #f0f0f0; /* Branco acinzentado */
-    --cor-texto-secundario: #cccccc; /* Cinza claro para detalhes */
-    --cor-destaque-rosa: #ff0088; /* Rosa vibrante */
-    --cor-destaque-rosa-hover: #e6007a; /* Rosa mais escuro para hover */
-    --cor-borda-cinza: #555555; /* Borda cinza escura */
-    --cor-sombra: rgba(0, 0, 0, 0.4); /* Sombra padrão */
-    --border-radius-base: 12px; /* Raio de borda padrão para elementos */
+    --cor-fundo: #2c3e50; /* Azul escuro */
+    --cor-texto-claro: #ecf0f1; /* Cinzento claro */
+    --cor-destaque-rosa: #e74c3c; /* Vermelho/Rosa */
+    --cor-destaque-azul: #3498db; /* Azul */
+    --cor-borda: #34495e; /* Azul mais escuro */
+    --cor-hover: #34495e; /* Azul mais escuro para hover */
 }
 
-/* --- Estilos Globais e do Body --- */
+/* Estilos gerais do corpo */
 body {
-    font-family: 'Inter', sans-serif; /* Define a fonte principal para 'Inter'. */
     margin: 0;
-    padding: 0;
-    background-color: var(--cor-fundo-principal);
-    color: var(--cor-texto-principal);
-    min-height: 100vh;
-    overflow-x: hidden; /* Evita barra de rolagem horizontal */
+    font-family: 'Arial', sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto-claro);
+    overflow-x: hidden; /* Evita scroll horizontal */
+    transition: margin-left 0.3s ease; /* Transição suave para o body */
 }
 
-/* Estilo específico para body em páginas com menu lateral */
-body.has-sidebar {
-    display: flex; /* Usa Flexbox para organizar o menu lateral e o conteúdo principal. */
+/* Estilos para o wrapper do conteúdo principal */
+.main-content-wrapper {
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: #34495e; /* Fundo do conteúdo */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
-/* --- Estilos de Títulos --- */
-h1, h2, h3, h4, h5, h6 {
+/* Estilos para títulos */
+h1, h2, h3, h4 {
     color: var(--cor-destaque-rosa);
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 25px; /* Espaço padrão abaixo dos títulos */
+    margin-bottom: 20px;
 }
 
+/* Estilos para parágrafos */
 p {
-    color: var(--cor-texto-principal);
-    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 15px;
 }
 
+/* Estilos para a marquee */
 marquee {
-    color: var(--cor-texto-principal);
+    color: var(--cor-destaque-azul);
+    font-size: 1.5em;
+    margin: 20px 0;
+    padding: 10px 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
 }
 
-/* --- Menu Lateral --- */
+/* Estilos para o botão de menu (hambúrguer) */
+.btn-menu {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: var(--cor-destaque-rosa);
+    color: var(--cor-texto-claro);
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000; /* Garante que esteja acima de outros elementos */
+    font-size: 1.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.btn-menu:hover {
+    background-color: #c0392b; /* Tom mais escuro ao passar o mouse */
+}
+
+/* Estilos para o menu lateral */
 .menu-lateral {
     width: 250px;
-    background-color: var(--cor-fundo-menu);
-    padding: 20px;
+    height: 100vh;
+    background-color: var(--cor-borda);
     position: fixed;
     top: 0;
-    left: -250px; /* Inicialmente fora da tela */
-    height: 100%;
-    transition: left 0.3s ease;
-    z-index: 999;
-    box-shadow: 2px 0 10px var(--cor-sombra);
-    border-right: 1px solid #333;
-    border-top-right-radius: var(--border-radius-base);
-    border-bottom-right-radius: var(--border-radius-base);
+    left: -250px; /* Escondido por padrão */
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    transition: left 0.3s ease; /* Transição suave para o menu */
+    z-index: 999; /* Abaixo do botão de menu, mas acima do conteúdo */
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 }
 
-.menu-lateral.open {
-    left: 0;
+/* Estado aberto do menu lateral */
+.menu-lateral.open-sidebar {
+    left: 0; /* Move para a posição visível */
 }
 
-.btn-menu {
-    cursor: pointer;
-    font-size: 2rem;
-    margin: 15px;
-    position: fixed;
-    z-index: 1000;
-    top: 10px;
-    left: 10px;
-    color: var(--cor-destaque-rosa);
-    transition: transform 0.3s ease;
-}
-.btn-menu:hover {
-    transform: scale(1.1);
+/* Move o conteúdo principal quando o menu está aberto */
+body.open-sidebar {
+    margin-left: 250px; /* Empurra o conteúdo para a direita */
 }
 
+/* Lista de itens do menu */
 .menu-lateral ul {
     list-style: none;
     padding: 0;
-    margin: 0;
     width: 100%;
 }
-.item-menu {
+
+.menu-lateral ul li {
+    width: 100%;
     margin-bottom: 10px;
 }
 
-.item-menu a {
+/* Links do menu */
+.menu-lateral ul li a {
+    color: var(--cor-texto-claro);
     text-decoration: none;
-    color: var(--cor-texto-principal);
     display: flex;
     align-items: center;
-    padding: 12px 15px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-weight: bold;
+    padding: 10px 20px;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.item-menu .icon {
+.menu-lateral ul li a .icon {
+    font-size: 1.5em;
     margin-right: 15px;
-    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-lateral ul li a .txt-link {
+    font-size: 1.1em;
+    flex-grow: 1; /* Permite que o texto ocupe o espaço restante */
+}
+
+/* Efeito hover nos links do menu */
+.menu-lateral ul li a:hover,
+.menu-lateral ul li a.active { /* Estilo para o item ativo */
+    background-color: var(--cor-hover);
     color: var(--cor-destaque-rosa);
 }
-.item-menu a:hover,
-.item-menu a.active {
-    background-color: var(--cor-destaque-rosa);
-    color: #ffffff;
-}
-.item-menu a:hover .icon,
-.item-menu a.active .icon {
-    color: #ffffff;
-}
 
-/* --- Conteúdo Principal (main) --- */
-main {
-    flex: 1;
-    padding: 20px;
-    margin-left: 0;
-    transition: margin-left 0.3s ease;
-    position: relative;
-    z-index: 1;
-    background-color: var(--cor-fundo-principal); /* Garante que o fundo do main também seja preto. */
-    padding-left: 70px; /* Espaço para o botão de menu quando está fechado. */
-}
-
-/* Ajusta o conteúdo principal quando o menu lateral estiver aberto. */
-body.menu-aberto main {
-    margin-left: 250px;
-    padding-left: 20px;
-}
-/* Move o botão de menu para a direita quando o menu lateral está aberto. */
-body.menu-aberto .btn-menu {
-    left: 260px;
-    color: var(--cor-texto-principal); /* Altera a cor do botão quando o menu está aberto para melhor contraste. */
-}
-
-/* --- Container de Conteúdo (main-content-wrapper) e Container de Login --- */
-/* Aplicado a ambos para consistência */
-.main-content-wrapper, .login-container {
-    background-color: var(--cor-fundo-secundario);
-    padding: 30px;
-    border-radius: var(--border-radius-base);
-    box-shadow: 0 4px 15px var(--cor-sombra);
-    width: 100%;
-    max-width: 900px; /* Largura máxima para conteúdo geral */
-    margin: auto;
-    box-sizing: border-box;
-}
-
-/* Ajuste específico para o container de login */
-.login-container {
-    max-width: 450px; /* Largura menor para o formulário de login, focando-o. */
-}
-
-/* --- Estilos de Formulários e Inputs --- */
-.form-container {
-    margin-top: 30px;
-    padding: 25px;
-    border: 1px solid var(--cor-destaque-rosa);
-    border-radius: 10px;
-    background-color: #222222;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.form-label {
-    color: var(--cor-texto-principal);
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.form-control {
-    background-color: #333333;
-    border: 1px solid var(--cor-borda-cinza);
-    color: #ffffff;
-    border-radius: 6px;
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-}
-.form-control:focus {
-    border-color: var(--cor-destaque-rosa);
-    box-shadow: 0 0 0 0.25rem rgba(255, 0, 136, 0.25);
-    background-color: #3a3a3a;
-    color: #ffffff;
-}
-
-/* --- Estilo dos Botões (Bootstrap customizado) --- */
-.btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-    margin-right: 10px;
-}
-
-.btn-primary { /* Mapeado para o estilo rosa principal */
-    background-color: var(--cor-destaque-rosa);
-    border-color: var(--cor-destaque-rosa);
-    color: #ffffff;
-}
-.btn-primary:hover {
-    background-color: var(--cor-destaque-rosa-hover);
-    border-color: var(--cor-destaque-rosa-hover);
-}
-
-.btn-secondary { /* Exemplo para outros botões, se tiver */
-    background-color: #555555;
-    border-color: #555555;
-    color: #ffffff;
-}
-.btn-secondary:hover {
-    background-color: #666666;
-    border-color: #666666;
-}
-
-.btn-danger { /* Exemplo para botões de deletar */
-    background-color: #dc3545;
-    border-color: #dc3545;
-    color: #ffffff;
-}
-.btn-danger:hover {
-    background-color: #c82333;
-    border-color: #c82333;
-}
-
-/* --- Estilos de Tabela (para listaralunos.html, listarcursos.html) --- */
+/* Estilos para tabelas */
 .table {
     width: 100%;
     margin-top: 20px;
     border-collapse: collapse;
-    background-color: #333333; /* Fundo da tabela */
+    background-color: #34495e; /* Fundo da tabela */
+    color: var(--cor-texto-claro);
     border-radius: 8px;
-    overflow: hidden; /* Para que os cantos arredondados funcionem */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden; /* Garante que as bordas arredondadas funcionem */
 }
 
 .table th, .table td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #444444; /* Borda entre as linhas */
-    color: var(--cor-texto-principal);
+    border-bottom: 1px solid var(--cor-borda);
 }
 
-.table thead th {
-    background-color: #222222; /* Fundo do cabeçalho */
-    color: var(--cor-destaque-rosa);
+.table th {
+    background-color: var(--cor-destaque-azul);
+    color: white;
     font-weight: bold;
-    text-transform: uppercase;
 }
 
 .table tbody tr:hover {
-    background-color: #3a3a3a; /* Fundo ao passar o mouse na linha */
+    background-color: #4a647d; /* Cor ao passar o mouse na linha */
 }
 
-/* Estilo para o último item de ação na tabela para alinhar botões */
-.table td:last-child {
-    text-align: center; /* Centraliza botões de ação */
+.table tbody tr:nth-child(even) {
+    background-color: #3f5870; /* Cor para linhas pares */
 }
 
-/* --- Ajustes de Responsividade --- */
+/* Estilos para formulários */
+.form-container {
+    background-color: #34495e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.form-container h4 {
+    color: var(--cor-destaque-rosa);
+    margin-bottom: 20px;
+}
+
+.form-label {
+    color: var(--cor-texto-claro);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    background-color: #2c3e50;
+    border: 1px solid var(--cor-borda);
+    color: var(--cor-texto-claro);
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box; /* Garante que padding não aumente a largura */
+}
+
+.form-control:focus {
+    border-color: var(--cor-destaque-azul);
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    background-color: #2c3e50; /* Mantém a cor de fundo no foco */
+    color: var(--cor-texto-claro);
+}
+
+/* Estilos para botões */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--cor-destaque-azul);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #229a54;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: var(--cor-destaque-rosa);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #7f8c8d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #6c7a7b;
+    transform: translateY(-2px);
+}
+
+/* Estilos para mensagens de feedback */
+.message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Responsividade básica */
 @media (max-width: 768px) {
-    body {
-        padding: 10px; /* Reduz padding do body em mobile */
-    }
     .menu-lateral {
-        width: 100%;
-        height: auto;
-        left: 0;
-        top: -200px;
-        flex-direction: row;
-        justify-content: space-around;
-        padding: 15px 10px;
-        border-radius: 0;
-        border-bottom-left-radius: var(--border-radius-base);
-        border-bottom-right-radius: var(--border-radius-base);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        width: 200px; /* Menu um pouco mais estreito em telas menores */
+        left: -200px;
     }
-    .menu-lateral.open {
-        top: 0;
-    }
-    .menu-lateral ul {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    .item-menu {
-        margin: 5px;
-    }
-    .item-menu a {
-        padding: 8px 10px;
-    }
-    .item-menu .icon {
-        margin-right: 5px;
+    body.open-sidebar {
+        margin-left: 200px;
     }
     .btn-menu {
         top: 10px;
         left: 10px;
-        font-size: 24px;
+        font-size: 1.5em;
+        padding: 8px 12px;
     }
-    body.menu-aberto main {
-        margin-left: 0;
-        padding-top: 200px;
-    }
-    .main-content-wrapper, .login-container {
+    .main-content-wrapper {
         padding: 15px;
-        max-width: 100%; /* Permite que o container ocupe toda a largura disponível */
+        margin: 10px auto;
     }
-    .btn {
-        width: 100%;
-        margin-bottom: 10px;
-        margin-right: 0;
-    }
-    /* Esconde o texto da coluna ID em telas pequenas para tabelas */
-    .table th:first-child, .table td:first-child {
-        display: none;
-    }
-    /* Ajusta a largura das colunas da tabela em telas pequenas */
     .table th, .table td {
-        white-space: nowrap; /* Evita que o texto quebre */
-        overflow: hidden;
-        text-overflow: ellipsis; /* Adiciona '...' se o texto for muito longo */
-        padding: 8px; /* Reduz o padding */
+        padding: 8px 10px;
+        font-size: 0.9em;
     }
+}
+
+/* Estilos para a lista de resultados na dashboard */
+.list-group-item {
+    background-color: #34495e; /* Fundo escuro para os itens da lista */
+    color: var(--cor-texto-claro);
+    border-color: var(--cor-borda);
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #4a647d; /* Cor ao passar o mouse */
+}
+
+.text-pink-500 {
+    color: var(--cor-destaque-rosa); /* Cor rosa para títulos */
+}
+
+.bg-dark {
+    background-color: #2c3e50 !important; /* Fundo escuro para seções */
+}
+
+.rounded-lg {
+    border-radius: 0.5rem !important; /* Cantos arredondados */
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* Sombra */
+}
+
+.form-control {
+    color: var(--cor-texto-claro); /* Garante que o texto digitado seja claro */
 }
