@@ -42,6 +42,9 @@ app.use(cors({
 
 app.use(express.json());  // Para analisar JSON no corpo da requisição
 
+// --- Servir Arquivos Estáticos ---
+app.use(express.static(path.join(__dirname, '../frontend'))); // Serve a pasta frontend
+
 // --- Definição de Schemas e Modelos Mongoose ---
 const alunoSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
@@ -61,33 +64,17 @@ const cursoSchema = new mongoose.Schema({
 
 const Curso = mongoose.model('Curso', cursoSchema);
 
-// --- Rota de Login ---
-app.post('/login', async (req, res) => {
-    const { login, password } = req.body;
-
-    console.log("Tentando fazer login com:", login, password);
-
-    // Simulando a verificação com dados fixos (substitua com lógica real de autenticação, ex: consulta ao banco de dados)
-    const users = [
-        { username: 'admin', password: 'admin123' }  // Exemplo de dados de login
-    ];
-
-    // Encontrar usuário no banco de dados ou usar uma lógica mais avançada
-    const user = users.find(u => u.username === login && u.password === password);
-
-    if (user) {
-        // Aqui você gera um token (por exemplo, JWT) para autenticação
-        const token = 'seu_token_aqui';  // Geração de token real aqui
-
-        // Retorna o token e mensagem de sucesso
-        res.status(200).json({ message: 'Login bem-sucedido!', token });
-    } else {
-        // Se as credenciais não corresponderem, retorna um erro
-        res.status(401).json({ error: 'Credenciais inválidas' });
-    }
+// --- Rota para a raiz ('/') para redirecionar para o login.html ---
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'login.html'));  // Serve o login.html da pasta frontend
 });
 
-// --- Rotas de API ---
+// --- Rota para a página de login ---
+app.get('/login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend', 'login.html'));  // Serve a página login.html
+});
+
+// --- Outras rotas de API para alunos e cursos ---
 app.get('/alunos', async (req, res) => {
     try {
         const alunos = await Aluno.find({});
@@ -98,7 +85,6 @@ app.get('/alunos', async (req, res) => {
     }
 });
 
-// Rota para adicionar um aluno
 app.post('/alunos', async (req, res) => {
     const { id, Nome, Apelido, Curso, Ano_Curricular } = req.body;
     const novoAluno = new Aluno({ id, Nome, Apelido, Curso, Ano_Curricular });
@@ -112,7 +98,6 @@ app.post('/alunos', async (req, res) => {
     }
 });
 
-// Rota para deletar um aluno pelo ID
 app.delete('/alunos/:id', async (req, res) => {
     const alunoId = req.params.id;
 
@@ -129,7 +114,6 @@ app.delete('/alunos/:id', async (req, res) => {
     }
 });
 
-// Rota para buscar cursos
 app.get('/cursos', async (req, res) => {
     try {
         const cursos = await Curso.find({});
@@ -140,7 +124,6 @@ app.get('/cursos', async (req, res) => {
     }
 });
 
-// Rota para adicionar um curso
 app.post('/cursos', async (req, res) => {
     const { id, Nome, Sigla } = req.body;
     const novoCurso = new Curso({ id, Nome, Sigla });
@@ -154,7 +137,6 @@ app.post('/cursos', async (req, res) => {
     }
 });
 
-// Rota para deletar um curso pelo ID
 app.delete('/cursos/:id', async (req, res) => {
     const cursoId = req.params.id;
 
@@ -169,11 +151,6 @@ app.delete('/cursos/:id', async (req, res) => {
         console.error('Erro ao deletar curso:', err);
         res.status(500).json({ error: 'Erro ao deletar curso' });
     }
-});
-
-// --- Rota para servir o index.html ---
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));  // Modifique para o caminho correto do seu HTML
 });
 
 // Iniciando o servidor
