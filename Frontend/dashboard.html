@@ -100,30 +100,7 @@
     </main>
 
     <!-- Script para a interatividade do menu lateral -->
-    <script>
-        const menuBtn = document.getElementById("menu-toggle");
-        const menu = document.getElementById("menu-lateral");
-        const body = document.body;
-
-        menuBtn.addEventListener("click", () => {
-            menu.classList.toggle("open");
-            body.classList.toggle("menu-aberto");
-        });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const currentPath = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('.menu-lateral a');
-
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href');
-                if (linkHref && (linkHref === currentPath || (linkHref === 'index.html' && currentPath === ''))) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        });
-    </script>
+    <script src="menu.js"></script>
     <!-- Script específico do dashboard -->
     <script src="dashboard.js"></script>
 </body>

@@ -29,7 +29,7 @@ const messageDisplay = document.getElementById('messageDisplay');
 function showMessage(message, type = 'info') {
     if (messageDisplay) {
         messageDisplay.textContent = message;
-        messageDisplay.className = `message ${type}`; // Adiciona classes para estilização (ex: .message.success, .message.error)
+        messageDisplay.className = `message ${type}`; // Adiciona classes para estilização
         setTimeout(() => {
             messageDisplay.textContent = '';
             messageDisplay.className = 'message';
@@ -40,21 +40,45 @@ function showMessage(message, type = 'info') {
 }
 
 /**
+ * Renderiza uma lista de itens (alunos ou cursos) na interface.
+ * @param {Array} items - O array de alunos ou cursos.
+ * @param {HTMLElement} resultsContainer - O elemento DOM onde os resultados serão exibidos.
+ * @param {HTMLElement} noResultsMessageElement - O elemento DOM da mensagem "nenhum encontrado".
+ * @param {string} type - 'aluno' ou 'curso' para formatar o item.
+ */
+function renderResults(items, resultsContainer, noResultsMessageElement, type) {
+    resultsContainer.innerHTML = ''; // Limpa resultados anteriores
+    noResultsMessageElement.style.display = 'none'; // Esconde a mensagem de "nenhum encontrado"
+
+    if (items.length > 0) {
+        items.forEach(itemData => {
+            const item = document.createElement('a');
+            item.href = '#'; // Pode ser um link para a página de detalhes, se houver
+            item.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary';
+
+            if (type === 'aluno') {
+                item.innerHTML = `<strong>ID:</strong> ${itemData.id} | <strong>Nome:</strong> ${itemData.Nome} ${itemData.Apelido} | <strong>Curso:</strong> ${itemData.Curso} | <strong>Ano:</strong> ${itemData.Ano_Curricular}`;
+            } else if (type === 'curso') {
+                item.innerHTML = `<strong>ID:</strong> ${itemData.id} | <strong>Nome:</strong> ${itemData.Nome} | <strong>Sigla:</strong> ${itemData.Sigla}`;
+            }
+            resultsContainer.appendChild(item);
+        });
+    } else {
+        noResultsMessageElement.style.display = 'block'; // Exibe mensagem de "nenhum encontrado"
+    }
+}
+
+/**
  * Função assíncrona para buscar e filtrar alunos.
+ * Se searchTerm for vazio, busca todos os alunos.
  */
 async function searchAlunos() {
     const searchTerm = searchAlunoInput.value.toLowerCase().trim();
-    alunosSearchResults.innerHTML = ''; // Limpa resultados anteriores
-    noAlunoResults.style.display = 'none'; // Esconde a mensagem de "nenhum encontrado"
-
-    if (searchTerm.length < 2) { // Não pesquisa se o termo for muito curto
-        return;
-    }
+    
+    // Log para depuração: O que está a ser pesquisado e para onde
+    console.log(`[searchAlunos] Termo de pesquisa: "${searchTerm}" | URL: ${API_BASE_URL}/alunos`);
 
     try {
-        // Log para depuração: O que está a ser pesquisado e para onde
-        console.log(`A pesquisar alunos com termo: "${searchTerm}" em: ${API_BASE_URL}/alunos`);
-        
         const response = await fetch(`${API_BASE_URL}/alunos`);
         if (!response.ok) {
             const errorData = await response.json();
@@ -63,51 +87,44 @@ async function searchAlunos() {
         const alunos = await response.json();
 
         // Log para depuração: Dados de alunos recebidos
-        console.log("Alunos recebidos:", alunos);
+        console.log("[searchAlunos] Alunos recebidos:", alunos);
 
-        const filteredAlunos = alunos.filter(aluno =>
-            aluno.Nome.toLowerCase().includes(searchTerm) ||
-            aluno.Apelido.toLowerCase().includes(searchTerm) ||
-            aluno.id.toString().includes(searchTerm) ||
-            aluno.Curso.toLowerCase().includes(searchTerm)
-        );
-
-        // Log para depuração: Alunos filtrados
-        console.log("Alunos filtrados:", filteredAlunos);
-
-        if (filteredAlunos.length > 0) {
-            filteredAlunos.forEach(aluno => {
-                const item = document.createElement('a');
-                item.href = '#'; // Pode ser um link para a página de detalhes do aluno, se houver
-                item.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary';
-                item.innerHTML = `<strong>ID:</strong> ${aluno.id} | <strong>Nome:</strong> ${aluno.Nome} ${aluno.Apelido} | <strong>Curso:</strong> ${aluno.Curso} | <strong>Ano:</strong> ${aluno.Ano_Curricular}`;
-                alunosSearchResults.appendChild(item);
-            });
-        } else {
-            noAlunoResults.style.display = 'block'; // Exibe mensagem de "nenhum encontrado"
+        let displayAlunos = [];
+        if (searchTerm.length >= 2) { // Filtra se o termo for suficientemente longo
+            displayAlunos = alunos.filter(aluno =>
+                aluno.Nome.toLowerCase().includes(searchTerm) ||
+                aluno.Apelido.toLowerCase().includes(searchTerm) ||
+                aluno.id.toString().includes(searchTerm) ||
+                aluno.Curso.toLowerCase().includes(searchTerm)
+            );
+        } else { // Se o termo for vazio ou muito curto, exibe todos os alunos
+            displayAlunos = alunos;
         }
+
+        // Log para depuração: Alunos a serem exibidos
+        console.log("[searchAlunos] Alunos a serem exibidos:", displayAlunos);
+
+        renderResults(displayAlunos, alunosSearchResults, noAlunoResults, 'aluno');
     } catch (error) {
-        console.error("Erro ao pesquisar alunos:", error);
-        showMessage("Erro ao pesquisar alunos. Tente novamente.", 'error');
+        console.error("[searchAlunos] Erro ao buscar/pesquisar alunos:", error);
+        showMessage("Erro ao carregar ou pesquisar alunos. Verifique a consola para detalhes.", 'error');
+        alunosSearchResults.innerHTML = ''; // Limpa resultados em caso de erro
+        noAlunoResults.style.display = 'block'; // Mostra mensagem de erro
+        noAlunoResults.textContent = "Não foi possível carregar os alunos. Verifique a conexão.";
     }
 }
 
 /**
  * Função assíncrona para buscar e filtrar cursos.
+ * Se searchTerm for vazio, busca todos os cursos.
  */
 async function searchCursos() {
     const searchTerm = searchCursoInput.value.toLowerCase().trim();
-    cursosSearchResults.innerHTML = ''; // Limpa resultados anteriores
-    noCursoResults.style.display = 'none'; // Esconde a mensagem de "nenhum encontrado"
 
-    if (searchTerm.length < 2) { // Não pesquisa se o termo for muito curto
-        return;
-    }
+    // Log para depuração: O que está a ser pesquisado e para onde
+    console.log(`[searchCursos] Termo de pesquisa: "${searchTerm}" | URL: ${API_BASE_URL}/cursos`);
 
     try {
-        // Log para depuração: O que está a ser pesquisado e para onde
-        console.log(`A pesquisar cursos com termo: "${searchTerm}" em: ${API_BASE_URL}/cursos`);
-
         const response = await fetch(`${API_BASE_URL}/cursos`);
         if (!response.ok) {
             const errorData = await response.json();
@@ -116,31 +133,29 @@ async function searchCursos() {
         const cursos = await response.json();
 
         // Log para depuração: Dados de cursos recebidos
-        console.log("Cursos recebidos:", cursos);
+        console.log("[searchCursos] Cursos recebidos:", cursos);
 
-        const filteredCursos = cursos.filter(curso =>
-            curso.Nome.toLowerCase().includes(searchTerm) ||
-            curso.Sigla.toLowerCase().includes(searchTerm) ||
-            curso.id.toString().includes(searchTerm)
-        );
-
-        // Log para depuração: Cursos filtrados
-        console.log("Cursos filtrados:", filteredCursos);
-
-        if (filteredCursos.length > 0) {
-            filteredCursos.forEach(curso => {
-                const item = document.createElement('a');
-                item.href = '#'; // Pode ser um link para a página de detalhes do curso, se houver
-                item.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary';
-                item.innerHTML = `<strong>ID:</strong> ${curso.id} | <strong>Nome:</strong> ${curso.Nome} | <strong>Sigla:</strong> ${curso.Sigla}`;
-                cursosSearchResults.appendChild(item);
-            });
-        } else {
-            noCursoResults.style.display = 'block'; // Exibe mensagem de "nenhum encontrado"
+        let displayCursos = [];
+        if (searchTerm.length >= 2) { // Filtra se o termo for suficientemente longo
+            displayCursos = cursos.filter(curso =>
+                curso.Nome.toLowerCase().includes(searchTerm) ||
+                curso.Sigla.toLowerCase().includes(searchTerm) ||
+                curso.id.toString().includes(searchTerm)
+            );
+        } else { // Se o termo for vazio ou muito curto, exibe todos os cursos
+            displayCursos = cursos;
         }
+
+        // Log para depuração: Cursos a serem exibidos
+        console.log("[searchCursos] Cursos a serem exibidos:", displayCursos);
+
+        renderResults(displayCursos, cursosSearchResults, noCursoResults, 'curso');
     } catch (error) {
-        console.error("Erro ao pesquisar cursos:", error);
-        showMessage("Erro ao pesquisar cursos. Tente novamente.", 'error');
+        console.error("[searchCursos] Erro ao buscar/pesquisar cursos:", error);
+        showMessage("Erro ao carregar ou pesquisar cursos. Verifique a consola para detalhes.", 'error');
+        cursosSearchResults.innerHTML = ''; // Limpa resultados em caso de erro
+        noCursoResults.style.display = 'block'; // Mostra mensagem de erro
+        noCursoResults.textContent = "Não foi possível carregar os cursos. Verifique a conexão.";
     }
 }
 
@@ -150,26 +165,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adiciona event listener para o input de pesquisa de alunos
     if (searchAlunoInput) {
         searchAlunoInput.addEventListener('input', searchAlunos);
+        // Carrega todos os alunos inicialmente
+        searchAlunos(); 
     }
 
     // Adiciona event listener para o input de pesquisa de cursos
     if (searchCursoInput) {
         searchCursoInput.addEventListener('input', searchCursos);
+        // Carrega todos os cursos inicialmente
+        searchCursos();
     }
 
-    // Lógica para o menu lateral (já existente e mantida)
-    const menuBtn = document.getElementById("menu-toggle");
-    const menu = document.getElementById("menu-lateral");
-    const body = document.body;
-
-    if (menuBtn && menu && body) {
-        menuBtn.addEventListener("click", () => {
-            menu.classList.toggle("open");
-            body.classList.toggle("menu-aberto");
-        });
-    }
-
-    // Lógica para destacar o item de menu ativo (já existente e mantida)
+    // Lógica para destacar o item de menu ativo (permanece aqui)
     const currentPath = window.location.pathname.split('/').pop();
     const navLinks = document.querySelectorAll('.menu-lateral a');
 
