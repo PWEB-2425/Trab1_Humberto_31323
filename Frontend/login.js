@@ -4,51 +4,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginPasswordInput = document.getElementById("loginPassword");
     const loginMessage = document.getElementById("loginMessage");
 
-    // URL do seu backend (certifique-se de que o caminho esteja correto)
+    // Define a URL da API dependendo se está em localhost ou no ambiente de produção
     const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.')
-        ? "http://localhost:3000"
-        : "https://trab1-humberto-31323-58n5.onrender.com"; // Ajuste para a URL correta da sua API
+        ? "http://localhost:3000" // Se estiver em localhost ou IP local, usa o backend local
+        : "https://trab1-humberto-31323-58n5.onrender.com"; // URL da API no Render (modifique para sua URL real)
 
-    // Envia o formulário para o backend
     loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Impede o envio tradicional do formulário
+        event.preventDefault(); // Impede o comportamento padrão de enviar o formulário
 
-        const login = loginUsernameInput.value.trim();
-        const password = loginPasswordInput.value.trim();
+        // Captura os valores dos inputs
+        const login = loginUsernameInput.value;
+        const password = loginPasswordInput.value;
 
-        loginMessage.textContent = ""; // Limpa mensagens anteriores
-
-        // Verificação simples para garantir que os campos não estão vazios
-        if (!login || !password) {
-            loginMessage.textContent = "Por favor, preencha ambos os campos.";
-            loginMessage.style.color = "red";
-            return;
-        }
+        loginMessage.textContent = ""; // Limpa qualquer mensagem anterior
 
         try {
-            // Envia a requisição POST para o servidor
+            // Exibe logs para debug
+            console.log("Tentando fazer login com:", { login, password });
+
+            // Faz uma requisição POST para o backend para validar o login
             const response = await fetch(`${API_BASE_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ login, password }), // Envia os dados de login
+                body: JSON.stringify({ login, password }),
             });
 
+            // Exibe a resposta para depuração
             const data = await response.json();
+            console.log("Resposta do servidor:", data);
 
-            // Verifica se a resposta foi bem-sucedida
             if (response.ok) {
                 loginMessage.style.color = "green";
                 loginMessage.textContent = data.message || "Login bem-sucedido! Redirecionando...";
 
-                // Armazena o token no localStorage (se a resposta incluir o token)
-                localStorage.setItem("accessToken", data.token);
+                // Salva o token no localStorage (se existir)
+                if (data.token) {
+                    localStorage.setItem("accessToken", data.token);
+                }
 
-                // Redireciona após 1 segundo para o menu inicial
+                // Redireciona para o menu inicial após um pequeno atraso
                 setTimeout(() => {
-                    window.location.href = "menuinicial.html"; // Ajuste para a página correta
-                }, 1000); 
+                    window.location.href = "menuinicial.html"; // Redirecionamento para menu inicial
+                }, 1000); // Atraso de 1 segundo (1000ms)
             } else {
                 loginMessage.style.color = "red";
                 loginMessage.textContent = data.error || "Erro de login!";
