@@ -1,7 +1,9 @@
 // frontend/listaraluno.js
 
 // ATENÇÃO: SUBSTITUA 'https://SUA_URL_DA_API_NO_RENDER.onrender.com' PELA URL REAL DA SUA API NO RENDER!
-const API_BASE_URL = "https://trab1-humberto-31323-58n5.onrender.com"; // URL da sua API no Render
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('172.16.') || window.location.hostname.startsWith('10.')
+    ? "http://localhost:3000" // Se estiver em localhost ou IP local, usa o backend local
+    : "https://trab1-humberto-31323-58n5.onrender.com"; // URL da sua API no Render
 
 // --- Obtenção de referências para elementos DOM (Document Object Model) ---
 const tabelaAlunosElement = document.getElementById("tabelaAlunos");

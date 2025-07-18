@@ -3,8 +3,9 @@
 
 // ATENÇÃO: SUBSTITUA 'https://SUA_URL_DA_API_NO_RENDER.onrender.com' PELA URL REAL DA SUA API NO RENDER!
 // Exemplo: 'https://trab1-humberto-31323-58n5.onrender.com'
-const API_BASE_URL = "https://trab1-humberto-31323-58n5.onrender.com";
-
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('172.16.') || window.location.hostname.startsWith('10.')
+    ? "http://localhost:3000" // Se estiver em localhost ou IP local, usa o backend local
+    : "https://trab1-humberto-31323-58n5.onrender.com";
 // Adiciona um 'event listener' para o evento 'DOMContentLoaded'.
 // Isso garante que o script só será executado quando todo o HTML da página tiver sido
 // completamente carregado e parseado, evitando erros ao tentar aceder elementos que ainda não existem.
