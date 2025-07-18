@@ -5,133 +5,153 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+require('dotenv').config();  // Carrega as variáveis de ambiente do arquivo .env
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
-// Conexão ao MongoDB
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Conectado ao MongoDB com sucesso!'))
-  .catch(err => console.error('Erro ao conectar ao MongoDB:', err));
+if (!MONGODB_URI) {
+    console.error('Erro: A variável MONGODB_URI não está definida no arquivo .env');
+    process.exit(1);  // Encerra o servidor se não houver a URI
+} else {
+    console.log('MONGODB_URI carregada com sucesso:', MONGODB_URI);
+}
 
-// Definindo o modelo de Aluno
+mongoose.set('strictQuery', false); // Para desabilitar o aviso de depreciação
+
+// Conectar ao MongoDB
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log('Conectado ao MongoDB com sucesso!');
+    })
+    .catch((err) => {
+        console.error('Erro ao conectar ao MongoDB:', err.message);
+        process.exit(1);  // Encerra o servidor se a conexão falhar
+    });
+
+
+// --- Middlewares Globais ---
+app.use(cors({
+    origin: [
+        'https://example.com',  // Substitua com os domínios do frontend
+        'http://localhost:3000'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+app.use(express.json());  // Para analisar JSON no corpo da requisição
+
+// --- Definição de Schemas e Modelos Mongoose ---
+
 const alunoSchema = new mongoose.Schema({
-  id: { type: Number, required: true, unique: true },
-  Nome: { type: String, required: true },
-  Apelido: { type: String, required: true },
-  Curso: { type: String, required: true },
-  Ano_Curricular: { type: String, required: true }
-});
+    id: { type: Number, required: true, unique: true },
+    Nome: { type: String, required: true },
+    Apelido: { type: String, required: true },
+    Curso: { type: String, required: true },
+    Ano_Curricular: { type: String, required: true }
+}, { collection: 'alunos' });
+
 const Aluno = mongoose.model('Aluno', alunoSchema);
 
-// Definindo o modelo de Curso
 const cursoSchema = new mongoose.Schema({
-  id: { type: Number, required: true, unique: true },
-  Nome: { type: String, required: true },
-  Sigla: { type: String, required: true }
-});
+    id: { type: Number, required: true, unique: true },
+    Nome: { type: String, required: true },
+    Sigla: { type: String, required: true }
+}, { collection: 'cursos' });
+
 const Curso = mongoose.model('Curso', cursoSchema);
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// --- Rotas de API ---
 
-// API Routes
-
-// --- Rota GET para alunos
+// Rota para buscar alunos
 app.get('/alunos', async (req, res) => {
-  try {
-    const alunos = await Aluno.find();
-    res.json(alunos);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao buscar alunos');
-  }
+    try {
+        const alunos = await Aluno.find({});
+        res.json(alunos);
+    } catch (err) {
+        console.error('Erro ao buscar alunos:', err);
+        res.status(500).json({ error: 'Erro ao buscar alunos' });
+    }
 });
 
-// --- Rota POST para adicionar aluno
+// Rota para adicionar um aluno
 app.post('/alunos', async (req, res) => {
-  const { id, Nome, Apelido, Curso, Ano_Curricular } = req.body;
+    const { id, Nome, Apelido, Curso, Ano_Curricular } = req.body;
+    const novoAluno = new Aluno({ id, Nome, Apelido, Curso, Ano_Curricular });
 
-  try {
-    const alunoExistente = await Aluno.findOne({ id });
-    if (alunoExistente) {
-      return res.status(400).json({ error: 'Aluno com esse ID já existe' });
+    try {
+        await novoAluno.save();
+        res.status(201).json({ message: 'Aluno adicionado com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao adicionar aluno:', err);
+        res.status(500).json({ error: 'Erro ao adicionar aluno' });
     }
-
-    const aluno = new Aluno({ id, Nome, Apelido, Curso, Ano_Curricular });
-    await aluno.save();
-    res.status(201).json({ message: 'Aluno adicionado com sucesso' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao adicionar aluno');
-  }
 });
 
-// --- Rota DELETE para remover aluno
+// Rota para deletar um aluno pelo ID
 app.delete('/alunos/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const aluno = await Aluno.findOneAndDelete({ id });
-    if (!aluno) {
-      return res.status(404).json({ error: 'Aluno não encontrado' });
+    const alunoId = req.params.id;
+
+    try {
+        const result = await Aluno.deleteOne({ id: alunoId });
+        if (result.deletedCount > 0) {
+            res.status(200).json({ message: 'Aluno deletado com sucesso!' });
+        } else {
+            res.status(404).json({ error: 'Aluno não encontrado' });
+        }
+    } catch (err) {
+        console.error('Erro ao deletar aluno:', err);
+        res.status(500).json({ error: 'Erro ao deletar aluno' });
     }
-    res.json({ message: 'Aluno deletado com sucesso' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao deletar aluno');
-  }
 });
 
-// --- Rota GET para cursos
+// Rota para buscar cursos
 app.get('/cursos', async (req, res) => {
-  try {
-    const cursos = await Curso.find();
-    res.json(cursos);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao buscar cursos');
-  }
+    try {
+        const cursos = await Curso.find({});
+        res.json(cursos);
+    } catch (err) {
+        console.error('Erro ao buscar cursos:', err);
+        res.status(500).json({ error: 'Erro ao buscar cursos' });
+    }
 });
 
-// --- Rota POST para adicionar curso
+// Rota para adicionar um curso
 app.post('/cursos', async (req, res) => {
-  const { id, Nome, Sigla } = req.body;
+    const { id, Nome, Sigla } = req.body;
+    const novoCurso = new Curso({ id, Nome, Sigla });
 
-  try {
-    const cursoExistente = await Curso.findOne({ id });
-    if (cursoExistente) {
-      return res.status(400).json({ error: 'Curso com esse ID já existe' });
+    try {
+        await novoCurso.save();
+        res.status(201).json({ message: 'Curso adicionado com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao adicionar curso:', err);
+        res.status(500).json({ error: 'Erro ao adicionar curso' });
     }
-
-    const curso = new Curso({ id, Nome, Sigla });
-    await curso.save();
-    res.status(201).json({ message: 'Curso adicionado com sucesso' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao adicionar curso');
-  }
 });
 
-// --- Rota DELETE para remover curso
+// Rota para deletar um curso pelo ID
 app.delete('/cursos/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const curso = await Curso.findOneAndDelete({ id });
-    if (!curso) {
-      return res.status(404).json({ error: 'Curso não encontrado' });
+    const cursoId = req.params.id;
+
+    try {
+        const result = await Curso.deleteOne({ id: cursoId });
+        if (result.deletedCount > 0) {
+            res.status(200).json({ message: 'Curso deletado com sucesso!' });
+        } else {
+            res.status(404).json({ error: 'Curso não encontrado' });
+        }
+    } catch (err) {
+        console.error('Erro ao deletar curso:', err);
+        res.status(500).json({ error: 'Erro ao deletar curso' });
     }
-    res.json({ message: 'Curso deletado com sucesso' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao deletar curso');
-  }
 });
 
-// Rota para verificar se o servidor está funcionando
+// Rota raiz '/' para verificar o servidor
 app.get('/', (req, res) => {
-  res.send('Servidor funcionando');
+    res.send('Servidor funcionando!');
 });
 
+// Iniciando o servidor
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
