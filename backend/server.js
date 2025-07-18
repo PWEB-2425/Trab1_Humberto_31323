@@ -49,9 +49,12 @@ const Curso = mongoose.model('Curso', cursoSchema);
 
 // --- Middlewares Globais ---
 
-// Configuração CORS: Permite requisições apenas do seu domínio Vercel
+// Configuração CORS: Permite requisições do seu domínio Vercel e localhost para desenvolvimento
 app.use(cors({
-  origin: 'https://trab1-humberto-31323-git-main-humbertos-projects-cfa953aa.vercel.app', // <<< URL DO SEU FRONTEND NO VERCEL
+  origin: [
+      'https://trab1humberto-g07px9h3p-humbertos-projects-cfa953aa.vercel.app', // <<< NOVO E MAIS RECENTE URL DO VERCEL
+      'http://localhost:3000' // Para desenvolvimento local
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -145,7 +148,7 @@ app.get('/alunos', async (req, res) => {
 app.post('/alunos', authenticateToken, async (req, res) => {
     try {
         // Tenta escrever no JSON (comportamento de "dual-write" mantido, mas opcional)
-        // Lembre-se que em Render, o JSON será efêmero.
+        // Lembre-se que em Render, o JSON será efímero.
         try {
             const data = await fs.readFile(bdPath, 'utf8');
             const jsonData = JSON.parse(data);
@@ -416,10 +419,19 @@ app.delete('/cursos/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// --- Servir arquivos estáticos do frontend (para desenvolvimento local) ---
+// Esta linha deve vir ANTES do middleware de 404!
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
+
+// --- Rota para a página inicial (redireciona para login.html) ---
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'frontend', 'login.html'));
+});
 
 // --- Middleware para lidar com 404 (Not Found) ---
+// Este middleware só será acionado se nenhuma rota da API ou arquivo estático for correspondido
 app.use((req, res, next) => {
-    console.log(`[404 NOT FOUND] Recurso da API não encontrado: ${req.originalUrl}`);
+    console.log(`[404 NOT FOUND] Recurso da API ou arquivo estático não encontrado: ${req.originalUrl}`);
     res.status(404).json({ error: 'Recurso da API não encontrado.' });
 });
 
